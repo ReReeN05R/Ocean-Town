@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ocean Town - ハワイの海辺リゾートのような体験型FiveMサーバー">
+    <title>Ocean Town - FiveM Server</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ==================== 
+         Canvas背景: 水面の揺らぎと波紋
+    ==================== -->
+    <canvas id="waterCanvas"></canvas>
+
+    <!-- ==================== 
+         雲の流れる背景
+    ==================== -->
+    <div class="cloud-container">
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="cloud cloud-3"></div>
+        <div class="cloud cloud-4"></div>
+    </div>
+
+    <!-- ==================== 
+         サーフボード型スクロールプログレスバー
+    ==================== -->
+    <div class="scroll-progress">
+        <div class="surfboard"></div>
+    </div>
+
+    <!-- ==================== 
+         ハンバーガーメニュー
+    ==================== -->
+    <button class="hamburger" id="hamburger" aria-label="メニューを開く">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <div class="ripple-effect"></div>
+    </button>
+
+    <!-- ==================== 
+         フルスクリーンナビゲーションメニュー
+    ==================== -->
+    <nav class="fullscreen-nav" id="fullscreenNav">
+        <div class="nav-water-effect"></div>
+        <ul class="nav-menu">
+            <li><a href="#world" class="nav-link">World</a></li>
+            <li><a href="#jobs" class="nav-link">Jobs</a></li>
+            <li><a href="#rules" class="nav-link">Rules</a></li>
+            <li><a href="#how-to-join" class="nav-link">How to Join</a></li>
+            <li><a href="#live-status" class="nav-link">Live Status</a></li>
+            <li><a href="#community" class="nav-link">Community</a></li>
+            <li><a href="#support" class="nav-link">Support</a></li>
+        </ul>
+    </nav>
+
+    <!-- ==================== 
+         ダークモード切り替えボタン
+    ==================== -->
+    <button class="theme-toggle" id="themeToggle" aria-label="テーマ切り替え">
+        <span class="sun-icon">☀️</span>
+        <span class="moon-icon">🌙</span>
+    </button>
+
+    <!-- ==================== 
+         メインコンテンツ
+    ==================== -->
+    <main>
+
+        <!-- ==================== 
+             ファーストビュー
+        ==================== -->
+        <section class="hero" id="hero">
+            <!-- ★追加：ヒーロー背景動画（トップだけ） -->
+    <div class="hero-video">
+        <video class="hero-video__media" autoplay muted loop playsinline preload="metadata">
+            <!-- （videoフォルダ内） -->
+            <source src="video/FiveM_movie.mp4" type="video/mp4">
+            <!-- 必要なら webm も追加可 -->
+            <!-- <source src="video/★★★★.webm" type="video/webm"> -->
+        </video>
+    </div>
+            <div class="hero-background"></div>
+            
+            <!-- 波の粒子で形成されるロゴ -->
+            <div class="logo-container" id="logoContainer">
+                <canvas id="logoCanvas"></canvas>
+                <h1 class="logo-text">Ocean Town</h1>
+            </div>
+
+            <!-- キャッチコピー: 文字が順番に揺れながら表示 -->
+            <div class="catch-copy" id="catchCopy">
+                <span class="catch-word">ハワイの</span>
+                <span class="catch-word">海辺リゾートに</span>
+                <span class="catch-word">降り立った</span>
+                <span class="catch-word">瞬間のような</span>
+                <span class="catch-word">高揚感</span>
+            </div>
+
+            <!-- スクロールダウンインジケーター -->
+            <div class="scroll-indicator">
+                <div class="wave-line"></div>
+                <span>Scroll</span>
+            </div>
+            <!-- Video credit -->
+            <div class="hero-video-credit">
+                Video by <span class="credit-name">Logic-Films</span>
+            </div>
+  
+        </section>
+
+        <!-- ==================== 
+             World セクション
+        ==================== -->
+        <section class="section world-section" id="world">
+            <div class="container">
+                <h2 class="section-title" data-text="World">World</h2>
+                <div class="world-content">
+                    <p class="world-description">
+                        Ocean Townは、現実の喧騒を忘れ、<br>
+                        美しい海辺の街で新しい人生を始められる場所。<br>
+                        <br>
+                        リアルな職業体験、プレイヤー同士の深い交流、<br>
+                        そして自由度の高いロールプレイが待っています。<br>
+                        <br>
+                        あなたの物語を、ここから始めましょう。
+                    </p>
+                    
+                    <div class="world-features">
+                        <div class="feature-card">
+                            <div class="feature-icon">🌊</div>
+                            <h3>リアルな街並み</h3>
+                            <p>細部までこだわった海辺の都市</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">👥</div>
+                            <h3>温かいコミュニティ</h3>
+                            <p>初心者にも優しいプレイヤー環境</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">⚡</div>
+                            <h3>高い自由度</h3>
+                            <p>あなたらしいRPを実現</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 
+             Jobs セクション
+        ==================== -->
+        <section class="section jobs-section" id="jobs">
+            <div class="container">
+                <h2 class="section-title" data-text="Jobs">Jobs</h2>
+                <p class="section-subtitle">様々な職業で、あなただけのストーリーを</p>
+                
+                <div class="jobs-grid">
+                    <!-- 警察 -->
+                    <div class="job-card" data-job="police">
+                        <div class="job-icon">🚓</div>
+                        <h3 class="job-title">警察</h3>
+                        <p class="job-description">街の平和を守る正義のヒーロー。犯罪を取り締まり、市民を守る。</p>
+                        <div class="job-glow"></div>
+                    </div>
+
+                    <!-- 救急隊 -->
+                    <div class="job-card" data-job="ems">
+                        <div class="job-icon">🚑</div>
+                        <h3 class="job-title">救急隊</h3>
+                        <p class="job-description">命を救うプロフェッショナル。緊急時に駆けつけ、人々を救う。</p>
+                        <div class="job-glow"></div>
+                    </div>
+
+                    <!-- 漁師 -->
+                    <div class="job-card" data-job="fisher">
+                        <div class="job-icon">🎣</div>
+                        <h3 class="job-title">漁師</h3>
+                        <p class="job-description">大海原で魚を追い、新鮮な海の幸を街に届ける。</p>
+                        <div class="job-glow"></div>
+                    </div>
+
+                    <!-- 販売 -->
+                    <div class="job-card" data-job="retail">
+                        <div class="job-icon">🏪</div>
+                        <h3 class="job-title">販売</h3>
+                        <p class="job-description">お店を切り盛りし、お客様に最高のサービスを提供。</p>
+                        <div class="job-glow"></div>
+                    </div>
+
+                    <!-- タクシー -->
+                    <div class="job-card" data-job="taxi">
+                        <div class="job-icon">🚕</div>
+                        <h3 class="job-title">タクシー</h3>
+                        <p class="job-description">街を知り尽くしたドライバー。お客様を安全に目的地へ。</p>
+                        <div class="job-glow"></div>
+                    </div>
+
+                    <!-- 運送 -->
+                    <div class="job-card" data-job="delivery">
+                        <div class="job-icon">🚚</div>
+                        <h3 class="job-title">運送</h3>
+                        <p class="job-description">物流を支えるプロ。大切な荷物を確実に届ける。</p>
+                        <div class="job-glow"></div>
+                    </div>
+
+                    <!-- メカニック（新規追加） -->
+                    <div class="job-card" data-job="mechanic">
+                        <div class="job-icon">🔧</div>
+                        <h3 class="job-title">メカニック</h3>
+                        <p class="job-description">車を愛する技術者。修理からカスタムまで幅広く対応。</p>
+                        <div class="job-glow"></div>
+                    </div>
+
+                    <!-- 個人医（新規追加） -->
+                    <div class="job-card" data-job="private-doctor">
+                        <div class="job-icon">⚕️</div>
+                        <h3 class="job-title">個人医</h3>
+                        <p class="job-description">独立した医療のプロ。街の人々の健康を個別にサポート。</p>
+                        <div class="job-glow"></div>
+                    </div>
+
+                    <!-- ギャング -->
+                    <div class="job-card" data-job="gang">
+                        <div class="job-icon">💀</div>
+                        <h3 class="job-title">ギャング</h3>
+                        <p class="job-description">裏社会を生きる者たち。危険だが、自由な生き方。</p>
+                        <div class="job-glow"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 
+             Rules セクション（新規追加）
+        ==================== -->
+        <section class="section rules-section" id="rules">
+            <div class="container">
+                <h2 class="section-title" data-text="Rules">Rules</h2>
+                <p class="section-subtitle">Ocean Townのルールを確認しよう</p>
+                
+                <div class="rules-grid">
+                    <!-- 基本ルール -->
+                    <a href="★★★★" target="_blank" class="rule-button" data-rule="basic">
+                        <div class="rule-icon">📋</div>
+                        <h3 class="rule-title">基本ルール</h3>
+                        <p class="rule-description">すべてのプレイヤーが守るべき基本的なルール</p>
+                        <span class="rule-arrow">→</span>
+                    </a>
+
+                    <!-- 公務員ルール -->
+                    <a href="★★★★" target="_blank" class="rule-button" data-rule="public">
+                        <div class="rule-icon">👮</div>
+                        <h3 class="rule-title">公務員ルール</h3>
+                        <p class="rule-description">警察・救急隊などの公務員向けルール</p>
+                        <span class="rule-arrow">→</span>
+                    </a>
+
+                    <!-- 犯罪者ルール -->
+                    <a href="★★★★" target="_blank" class="rule-button" data-rule="criminal">
+                        <div class="rule-icon">🔫</div>
+                        <h3 class="rule-title">犯罪者ルール</h3>
+                        <p class="rule-description">犯罪行為に関する詳細なルール</p>
+                        <span class="rule-arrow">→</span>
+                    </a>
+
+                    <!-- ギャングルール -->
+                    <a href="★★★★" target="_blank" class="rule-button" data-rule="gang">
+                        <div class="rule-icon">💀</div>
+                        <h3 class="rule-title">ギャングルール</h3>
+                        <p class="rule-description">ギャング組織の運営に関するルール</p>
+                        <span class="rule-arrow">→</span>
+                    </a>
+
+                    <!-- 半グレルール -->
+                    <a href="★★★★" target="_blank" class="rule-button" data-rule="hangure">
+                        <div class="rule-icon">⚠️</div>
+                        <h3 class="rule-title">半グレルール</h3>
+                        <p class="rule-description">グレーゾーンの活動に関するルール</p>
+                        <span class="rule-arrow">→</span>
+                    </a>
+
+                    <!-- 個人医ルール -->
+                    <a href="★★★★" target="_blank" class="rule-button" data-rule="private-doctor">
+                        <div class="rule-icon">⚕️</div>
+                        <h3 class="rule-title">個人医ルール</h3>
+                        <p class="rule-description">個人医療従事者向けの特別ルール</p>
+                        <span class="rule-arrow">→</span>
+                    </a>
+
+                    <!-- 法律 -->
+                    <a href="★★★★" target="_blank" class="rule-button" data-rule="law">
+                        <div class="rule-icon">⚖️</div>
+                        <h3 class="rule-title">法律</h3>
+                        <p class="rule-description">Ocean Town内で適用される法律一覧</p>
+                        <span class="rule-arrow">→</span>
+                    </a>
+
+                    <!-- 予備ルール -->
+                    <a href="★★★★" target="_blank" class="rule-button" data-rule="reserve">
+                        <div class="rule-icon">📝</div>
+                        <h3 class="rule-title">予備ルール</h3>
+                        <p class="rule-description">その他の補足・予備的なルール</p>
+                        <span class="rule-arrow">→</span>
+                    </a>
+                </div>
+
+                <div class="rules-notice">
+                    <p>⚠️ ルールは随時更新されます。定期的にご確認ください。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 
+             How to Join セクション
+        ==================== -->
+        <section class="section how-to-join-section" id="how-to-join">
+            <div class="container">
+                <h2 class="section-title" data-text="How to Join">How to Join</h2>
+                <p class="section-subtitle">簡単3ステップで参加できます</p>
+                
+                <!-- ステップコンテナ -->
+                <div class="steps-container">
+                    <!-- Step 1 -->
+                    <div class="step-item active" data-step="1">
+                        <div class="step-number">01</div>
+                        <div class="step-content">
+                            <h3 class="step-title">FiveMをインストール</h3>
+                            <p class="step-description">
+                                公式サイトから無料でFiveMをダウンロードし、<br>
+                                インストールしてください。<br>
+                                GTA Vが必要です。
+                            </p>
+                            <a href="https://fivem.net/" target="_blank" class="step-button">
+                                FiveM公式サイト
+                                <span class="button-ripple"></span>
+                            </a>
+                        </div>
+                        <div class="step-visual">🎮</div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="step-item" data-step="2">
+                        <div class="step-number">02</div>
+                        <div class="step-content">
+                            <h3 class="step-title">サーバーを検索</h3>
+                            <p class="step-description">
+                                FiveMクライアントを起動し、<br>
+                                サーバーリストから<br>
+                                <strong>"Ocean Town"</strong>を検索してください。
+                            </p>
+                        </div>
+                        <div class="step-visual">🔍</div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="step-item" data-step="3">
+                        <div class="step-number">03</div>
+                        <div class="step-content">
+                            <h3 class="step-title">接続して開始!</h3>
+                            <p class="step-description">
+                                サーバーに接続し、<br>
+                                Ocean Townでの新しい生活を<br>
+                                今すぐスタート!
+                            </p>
+                        </div>
+                        <div class="step-visual">🌊</div>
+                    </div>
+                </div>
+
+                <!-- ステップナビゲーション -->
+                <div class="steps-navigation">
+                    <button class="step-nav-btn active" data-target="1"></button>
+                    <button class="step-nav-btn" data-target="2"></button>
+                    <button class="step-nav-btn" data-target="3"></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 
+             Live Status セクション
+        ==================== -->
+        <section class="section live-status-section" id="live-status">
+            <div class="container">
+                <h2 class="section-title" data-text="Live Status">Live Status</h2>
+                <p class="section-subtitle">サーバーの現在の状況</p>
+                
+                <div class="status-grid">
+                    <div class="status-card">
+                        <div class="status-icon online">●</div>
+                        <h3>サーバー状態</h3>
+                        <p class="status-value" id="serverStatus">オンライン</p>
+                    </div>
+
+                    <div class="status-card">
+                        <div class="status-icon">👥</div>
+                        <h3>現在のプレイヤー</h3>
+                        <p class="status-value" id="playerCount">
+                            <span class="count-number">--</span> / 64
+                        </p>
+                    </div>
+
+                    <div class="status-card">
+                        <div class="status-icon">⚡</div>
+                        <h3>Ping</h3>
+                        <p class="status-value" id="serverPing">
+                            <span class="ping-number">--</span> ms
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 
+             Community セクション
+        ==================== -->
+        <section class="section community-section" id="community">
+            <div class="container">
+                <h2 class="section-title" data-text="Community">Community</h2>
+                <p class="section-subtitle">仲間たちと繋がろう</p>
+                
+                <div class="community-content">
+                    <p class="community-description">
+                        Ocean Townコミュニティに参加して、<br>
+                        最新情報やイベント情報をゲット!<br>
+                        <br>
+                        初心者サポートや攻略情報も充実しています。
+                    </p>
+
+                    <a href="###DiscordLink###" target="_blank" class="discord-button" id="discordButton">
+                        <svg class="discord-icon" viewBox="0 0 71 55" fill="none">
+                            <g clip-path="url(#clip0)">
+                                <path d="M60.1045 4.8978C55.5792 2.8214 50.7265 1.2916 45.6527 0.41542C45.5603 0.39851 45.468 0.440769 45.4204 0.525289C44.7963 1.6353 44.105 3.0834 43.6209 4.2216C38.1637 3.4046 32.7345 3.4046 27.3892 4.2216C26.905 3.0581 26.1886 1.6353 25.5617 0.525289C25.5141 0.443589 25.4218 0.40133 25.3294 0.41542C20.2584 1.2888 15.4057 2.8186 10.8776 4.8978C10.8384 4.9147 10.8048 4.9429 10.7825 4.9795C1.57795 18.7309 -0.943561 32.1443 0.293408 45.3914C0.299005 45.4562 0.335386 45.5182 0.385761 45.5576C6.45866 50.0174 12.3413 52.7249 18.1147 54.5195C18.2071 54.5477 18.305 54.5139 18.3638 54.4378C19.7295 52.5728 20.9469 50.6063 21.9907 48.5383C22.0523 48.4172 21.9935 48.2735 21.8676 48.2256C19.9366 47.4931 18.0979 46.6 16.3292 45.5858C16.1893 45.5041 16.1781 45.304 16.3068 45.2082C16.679 44.9293 17.0513 44.6391 17.4067 44.3461C17.471 44.2926 17.5606 44.2813 17.6362 44.3151C29.2558 49.6202 41.8354 49.6202 53.3179 44.3151C53.3935 44.2785 53.4831 44.2898 53.5502 44.3433C53.9057 44.6363 54.2779 44.9293 54.6529 45.2082C54.7816 45.304 54.7732 45.5041 54.6333 45.5858C52.8646 46.6197 51.0259 47.4931 49.0921 48.2228C48.9662 48.2707 48.9102 48.4172 48.9718 48.5383C50.038 50.6034 51.2554 52.5699 52.5959 54.435C52.6519 54.5139 52.7526 54.5477 52.845 54.5195C58.6464 52.7249 64.529 50.0174 70.6019 45.5576C70.6551 45.5182 70.6887 45.459 70.6943 45.3942C72.1747 30.0791 68.2147 16.7757 60.1968 4.9823C60.1772 4.9429 60.1437 4.9147 60.1045 4.8978ZM23.7259 37.3253C20.2276 37.3253 17.3451 34.1136 17.3451 30.1693C17.3451 26.225 20.1717 23.0133 23.7259 23.0133C27.308 23.0133 30.1626 26.2532 30.1066 30.1693C30.1066 34.1136 27.28 37.3253 23.7259 37.3253ZM47.3178 37.3253C43.8196 37.3253 40.9371 34.1136 40.9371 30.1693C40.9371 26.225 43.7636 23.0133 47.3178 23.0133C50.9 23.0133 53.7545 26.2532 53.6986 30.1693C53.6986 34.1136 50.9 37.3253 47.3178 37.3253Z" fill="currentColor"/>
+                            </g>
+                        </svg>
+                        <span>Discordに参加する</span>
+                        <span class="button-ripple"></span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 
+             Support セクション
+        ==================== -->
+        <section class="section support-section" id="support">
+            <div class="container">
+                <h2 class="section-title" data-text="Support">Support</h2>
+                <p class="section-subtitle">困ったときはお気軽に</p>
+                
+                <div class="support-content">
+                    <div class="support-card">
+                        <div class="support-icon">📖</div>
+                        <h3>初心者ガイド</h3>
+                        <p>基本的な操作方法やルールを<br>わかりやすく解説しています。</p>
+                    </div>
+
+                    <div class="support-card">
+                        <div class="support-icon">💬</div>
+                        <h3>FAQ</h3>
+                        <p>よくある質問と回答を<br>まとめています。</p>
+                    </div>
+
+                    <div class="support-card">
+                        <div class="support-icon">🎫</div>
+                        <h3>チケットサポート</h3>
+                        <p>Discord内でチケットを発行し、<br>運営に直接相談できます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ==================== 
+         フッター
+    ==================== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">Ocean Town</div>
+                <p class="footer-text">
+                    © 2026 Ocean Town. All Rights Reserved.<br>
+                    This is a FiveM server and is not affiliated with Rockstar Games.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== 
+         JavaScript: GSAP & ScrollTrigger
+    ==================== -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <!-- メインJavaScript -->
+    <script src="main.js"></script>
+
+</body>
+</html>
