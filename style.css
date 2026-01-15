@@ -1,0 +1,1812 @@
+/* ==========================================
+   Ocean Town - Official Website CSS
+   ハワイの海辺リゾート体験型サイト
+   ========================================== */
+
+/* ==========================================
+   リセット & 基本設定
+   ========================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* カラーパレット - ライトモード */
+    --color-bg: #f7fbff;
+    --color-text: #2c3e50;
+    --color-primary: #7fd7ff;
+    --color-secondary: #00aaff;
+    --color-accent: #4fc3f7;
+    --color-white: #ffffff;
+    --color-dark: #1a1a2e;
+    
+    /* グラデーション */
+    --gradient-ocean: linear-gradient(135deg, #7fd7ff 0%, #00aaff 100%);
+    --gradient-wave: linear-gradient(180deg, rgba(127, 215, 255, 0.3) 0%, rgba(0, 170, 255, 0.1) 100%);
+    
+    /* シャドウ */
+    --shadow-sm: 0 2px 8px rgba(0, 170, 255, 0.1);
+    --shadow-md: 0 4px 16px rgba(0, 170, 255, 0.15);
+    --shadow-lg: 0 8px 32px rgba(0, 170, 255, 0.2);
+    --shadow-glow: 0 0 20px rgba(127, 215, 255, 0.5);
+    
+    /* タイポグラフィ */
+    --font-main: 'Poppins', 'Noto Sans JP', sans-serif;
+    --font-display: 'Poppins', sans-serif;
+    
+    /* アニメーション */
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* ダークモード */
+body.dark-mode {
+    --color-bg: #0f1419;
+    --color-text: #e1e8ed;
+    --color-white: #1a1f2e;
+    --color-dark: #ffffff;
+    --shadow-sm: 0 2px 8px rgba(127, 215, 255, 0.2);
+    --shadow-md: 0 4px 16px rgba(127, 215, 255, 0.25);
+    --shadow-lg: 0 8px 32px rgba(127, 215, 255, 0.3);
+}
+
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.6;
+    overflow-x: hidden;
+    transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+/* ==========================================
+   Canvas背景 - 水面の揺らぎ
+   ========================================== */
+#waterCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* ==========================================
+   雲の流れる背景
+   ========================================== */
+.cloud-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.cloud {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 100px;
+    filter: blur(40px);
+    animation: cloudFloat 30s linear infinite;
+}
+
+.cloud-1 {
+    width: 300px;
+    height: 80px;
+    top: 10%;
+    left: -300px;
+    animation-duration: 40s;
+}
+
+.cloud-2 {
+    width: 400px;
+    height: 100px;
+    top: 30%;
+    left: -400px;
+    animation-duration: 50s;
+    animation-delay: 5s;
+}
+
+.cloud-3 {
+    width: 250px;
+    height: 70px;
+    top: 60%;
+    left: -250px;
+    animation-duration: 45s;
+    animation-delay: 10s;
+}
+
+.cloud-4 {
+    width: 350px;
+    height: 90px;
+    top: 80%;
+    left: -350px;
+    animation-duration: 55s;
+    animation-delay: 15s;
+}
+
+@keyframes cloudFloat {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(calc(100vw + 500px));
+    }
+}
+
+/* ダークモード時の雲 */
+body.dark-mode .cloud {
+    background: rgba(127, 215, 255, 0.1);
+}
+
+/* ==========================================
+   サーフボード型スクロールプログレスバー
+   ========================================== */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    right: 20px;
+    height: 100vh;
+    width: 4px;
+    background: rgba(127, 215, 255, 0.2);
+    z-index: 9999;
+    border-radius: 10px;
+}
+
+.surfboard {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 60px;
+    background: var(--gradient-ocean);
+    border-radius: 50% 50% 40% 40%;
+    box-shadow: var(--shadow-glow);
+    transition: top 0.1s linear;
+}
+
+.surfboard::before {
+    content: '🏄';
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 20px;
+}
+
+/* ==========================================
+   ハンバーガーメニュー
+   ========================================== */
+.hamburger {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background: var(--color-white);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10001;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition-smooth);
+}
+
+.hamburger:hover {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-lg);
+}
+
+.hamburger-line {
+    width: 24px;
+    height: 2px;
+    background: var(--color-primary);
+    border-radius: 2px;
+    transition: var(--transition-smooth);
+}
+
+.hamburger.active .hamburger-line:nth-child(1) {
+    transform: rotate(45deg) translateY(8px);
+}
+
+.hamburger.active .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active .hamburger-line:nth-child(3) {
+    transform: rotate(-45deg) translateY(-8px);
+}
+
+/* 波紋エフェクト */
+.ripple-effect {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.hamburger:active .ripple-effect {
+    animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+    0% {
+        box-shadow: 0 0 0 0 rgba(127, 215, 255, 0.7);
+    }
+    100% {
+        box-shadow: 0 0 0 30px rgba(127, 215, 255, 0);
+    }
+}
+
+/* ==========================================
+   フルスクリーンナビゲーション
+   ========================================== */
+.fullscreen-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: var(--color-white);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.fullscreen-nav.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 水面エフェクト */
+.nav-water-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(127, 215, 255, 0.3) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+
+.fullscreen-nav.active .nav-water-effect {
+    opacity: 1;
+    animation: waterSpread 1s ease-out;
+}
+
+@keyframes waterSpread {
+    0% {
+        transform: scale(0);
+    }
+    100% {
+        transform: scale(2);
+    }
+}
+
+.nav-menu {
+    list-style: none;
+    text-align: center;
+    position: relative;
+    z-index: 10;
+}
+
+.nav-menu li {
+    margin: 30px 0;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: var(--transition-smooth);
+}
+
+.fullscreen-nav.active .nav-menu li {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.fullscreen-nav.active .nav-menu li:nth-child(1) { transition-delay: 0.1s; }
+.fullscreen-nav.active .nav-menu li:nth-child(2) { transition-delay: 0.2s; }
+.fullscreen-nav.active .nav-menu li:nth-child(3) { transition-delay: 0.3s; }
+.fullscreen-nav.active .nav-menu li:nth-child(4) { transition-delay: 0.4s; }
+.fullscreen-nav.active .nav-menu li:nth-child(5) { transition-delay: 0.5s; }
+.fullscreen-nav.active .nav-menu li:nth-child(6) { transition-delay: 0.6s; }
+
+.nav-link {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-text);
+    text-decoration: none;
+    position: relative;
+    display: inline-block;
+    transition: var(--transition-smooth);
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 0;
+    height: 4px;
+    background: var(--gradient-ocean);
+    transition: width 0.4s ease;
+}
+
+.nav-link:hover {
+    color: var(--color-primary);
+    transform: translateY(-5px);
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* ==========================================
+   ダークモード切り替えボタン
+   ========================================== */
+.theme-toggle {
+    position: fixed !important;
+    bottom: 30px !important;
+    right: 30px !important;
+    width: 60px;
+    height: 60px;
+    background: var(--color-white);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition-smooth);
+    overflow: visible !important;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1) rotate(20deg);
+    box-shadow: var(--shadow-lg);
+}
+
+.sun-icon,
+.moon-icon {
+    position: absolute;
+    transition: var(--transition-smooth);
+}
+
+.sun-icon {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.moon-icon {
+    opacity: 0;
+    transform: scale(0) rotate(180deg);
+}
+
+body.dark-mode .sun-icon {
+    opacity: 0;
+    transform: scale(0) rotate(-180deg);
+}
+
+body.dark-mode .moon-icon {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+}
+
+/* ==========================================
+   コンテナ
+   ========================================== */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ==========================================
+   セクション共通スタイル
+   ========================================== */
+.section {
+    padding: 120px 0;
+    position: relative;
+}
+
+.section-title {
+    font-size: 4rem;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 20px;
+    background: var(--gradient-ocean);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.section-title::before {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: -1;
+    color: var(--color-primary);
+    opacity: 0.1;
+    font-size: 5rem;
+}
+
+.section-subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--color-text);
+    opacity: 0.7;
+    margin-bottom: 60px;
+}
+
+/* ==========================================
+   ファーストビュー
+   ========================================== */
+.hero {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+
+
+.hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, 
+        rgba(127, 215, 255, 0.2) 0%, 
+        rgba(247, 251, 255, 0.8) 50%,
+        var(--color-bg) 100%
+    );
+    z-index: 1;
+}
+
+.hero-background::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"><path fill="%237fd7ff" fill-opacity="0.3" d="M0,64L48,58.7C96,53,192,43,288,48C384,53,480,75,576,80C672,85,768,75,864,64C960,53,1056,43,1152,48L1200,53L1200,120L1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z"></path></svg>');
+    background-size: cover;
+    background-repeat: no-repeat;
+    animation: waveMove 8s ease-in-out infinite;
+}
+
+@keyframes waveMove {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-50px); }
+}
+
+/* ロゴコンテナ */
+.logo-container {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 40px;
+}
+
+#logoCanvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.logo-text {
+    font-size: 6rem;
+    font-weight: 900;
+    background: var(--gradient-ocean);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 4px 20px rgba(127, 215, 255, 0.3);
+    position: relative;
+    z-index: 3;
+}
+
+/* キャッチコピー */
+.catch-copy {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--color-text);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    max-width: 800px;
+    padding: 0 20px;
+}
+
+.catch-word {
+    opacity: 0;
+    transform: translateY(20px);
+    display: inline-block;
+    animation: floatWord 3s ease-in-out infinite;
+}
+
+@keyframes floatWord {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* スクロールインジケーター */
+.scroll-indicator {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: var(--color-primary);
+    font-weight: 600;
+    z-index: 2;
+    animation: scrollBounce 2s ease-in-out infinite;
+}
+
+@keyframes scrollBounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(10px); }
+}
+
+.wave-line {
+    width: 2px;
+    height: 40px;
+    background: linear-gradient(180deg, var(--color-primary) 0%, transparent 100%);
+    animation: waveScroll 1.5s ease-in-out infinite;
+}
+
+@keyframes waveScroll {
+    0% { opacity: 0; height: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; height: 40px; }
+}
+
+/* ==========================================
+   World セクション
+   ========================================== */
+.world-section {
+    background: var(--color-white);
+    border-radius: 40px;
+    margin: 0 20px;
+    box-shadow: var(--shadow-lg);
+}
+
+.world-description {
+    text-align: center;
+    font-size: 1.2rem;
+    line-height: 2;
+    margin-bottom: 60px;
+    color: var(--color-text);
+}
+
+.world-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 60px;
+}
+
+.feature-card {
+    background: var(--gradient-wave);
+    padding: 40px 30px;
+    border-radius: 20px;
+    text-align: center;
+    transition: var(--transition-smooth);
+    border: 2px solid var(--color-primary);
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-glow);
+}
+
+.feature-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    animation: float 3s ease-in-out infinite;
+}
+
+.feature-card:nth-child(2) .feature-icon {
+    animation-delay: 0.5s;
+}
+
+.feature-card:nth-child(3) .feature-icon {
+    animation-delay: 1s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: var(--color-text);
+}
+
+.feature-card p {
+    color: var(--color-text);
+    opacity: 0.8;
+}
+
+/* ==========================================
+   Jobs セクション
+   ========================================== */
+.jobs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 60px;
+}
+
+.job-card {
+    background: var(--color-white);
+    padding: 40px 30px;
+    border-radius: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    border: 2px solid transparent;
+}
+
+.job-card:hover {
+    transform: translateY(-15px);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-lg);
+}
+
+.job-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    display: inline-block;
+    transition: var(--transition-bounce);
+}
+
+.job-card:hover .job-icon {
+    transform: scale(1.2) rotate(10deg);
+}
+
+.job-title {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    color: var(--color-text);
+}
+
+.job-description {
+    color: var(--color-text);
+    opacity: 0.7;
+    line-height: 1.6;
+}
+
+/* 発光リップルエフェクト */
+.job-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, var(--color-primary) 0%, transparent 70%);
+    border-radius: 50%;
+    opacity: 0;
+    transition: var(--transition-smooth);
+    pointer-events: none;
+}
+
+.job-card:hover .job-glow {
+    width: 300px;
+    height: 300px;
+    opacity: 0.3;
+}
+
+/* ==========================================
+   How to Join セクション
+   ========================================== */
+.steps-container {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+    min-height: 500px;
+}
+
+.step-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: var(--color-white);
+    padding: 60px 40px;
+    border-radius: 30px;
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(50px);
+    transition: var(--transition-smooth);
+}
+
+.step-item.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+    position: relative;
+}
+
+.step-number {
+    font-size: 6rem;
+    font-weight: 900;
+    background: var(--gradient-ocean);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0.3;
+    position: absolute;
+    top: 20px;
+    right: 40px;
+}
+
+.step-content {
+    position: relative;
+    z-index: 2;
+}
+
+.step-title {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: var(--color-text);
+}
+
+.step-description {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    margin-bottom: 30px;
+    color: var(--color-text);
+    opacity: 0.8;
+}
+
+.step-button {
+    display: inline-block;
+    padding: 15px 40px;
+    background: var(--gradient-ocean);
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition-smooth);
+}
+
+.step-button:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-glow);
+}
+
+.button-ripple {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.step-button:active .button-ripple {
+    animation: buttonRipple 0.6s ease-out;
+}
+
+@keyframes buttonRipple {
+    0% {
+        width: 0;
+        height: 0;
+        opacity: 1;
+    }
+    100% {
+        width: 300px;
+        height: 300px;
+        opacity: 0;
+    }
+}
+
+.step-visual {
+    font-size: 8rem;
+    position: absolute;
+    bottom: 40px;
+    right: 40px;
+    opacity: 0.2;
+    animation: float 4s ease-in-out infinite;
+}
+
+/* ステップナビゲーション */
+.steps-navigation {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 40px;
+}
+
+.step-nav-btn {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid var(--color-primary);
+    background: transparent;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.step-nav-btn.active {
+    background: var(--color-primary);
+    transform: scale(1.3);
+}
+
+.step-nav-btn:hover {
+    background: var(--color-accent);
+    transform: scale(1.2);
+}
+
+/* ==========================================
+   Live Status セクション
+   ========================================== */
+.status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 60px;
+}
+
+.status-card {
+    background: var(--color-white);
+    padding: 40px 30px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition-smooth);
+}
+
+.status-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-lg);
+}
+
+.status-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.status-icon.online {
+    color: #4caf50;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.status-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    color: var(--color-text);
+    opacity: 0.7;
+}
+
+.status-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+/* ==========================================
+   Community セクション
+   ========================================== */
+.community-section {
+    background: var(--gradient-wave);
+    border-radius: 40px;
+    margin: 0 20px;
+}
+
+.community-description {
+    text-align: center;
+    font-size: 1.2rem;
+    line-height: 2;
+    margin-bottom: 40px;
+    color: var(--color-text);
+}
+
+.discord-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px 50px;
+    background: #5865F2;
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition-smooth);
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    max-width: 400px;
+}
+
+.discord-button:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(88, 101, 242, 0.4);
+}
+
+.discord-icon {
+    width: 30px;
+    height: 30px;
+}
+
+/* ==========================================
+   Support セクション
+   ========================================== */
+.support-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 60px;
+}
+
+.support-card {
+    background: var(--color-white);
+    padding: 40px 30px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition-smooth);
+}
+
+.support-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-lg);
+}
+
+.support-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.support-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: var(--color-text);
+}
+
+.support-card p {
+    color: var(--color-text);
+    opacity: 0.7;
+    line-height: 1.6;
+}
+
+/* ==========================================
+   フッター
+   ========================================== */
+.footer {
+    background: var(--color-dark);
+    color: var(--color-bg);
+    padding: 60px 0 40px;
+    text-align: center;
+}
+
+.footer-logo {
+    font-size: 2rem;
+    font-weight: 900;
+    background: var(--gradient-ocean);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 20px;
+}
+
+.footer-text {
+    opacity: 0.7;
+    line-height: 1.8;
+}
+
+/* ==========================================
+   レスポンシブデザイン
+   ========================================== */
+@media (max-width: 768px) {
+    .logo-text {
+        font-size: 3rem;
+    }
+    
+    .catch-copy {
+        font-size: 1.2rem;
+    }
+    
+    .section-title {
+        font-size: 2.5rem;
+    }
+    
+    .section-title::before {
+        font-size: 3rem;
+    }
+    
+    .nav-link {
+        font-size: 2rem;
+    }
+    
+    .jobs-grid,
+    .world-features,
+    .status-grid,
+    .support-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .step-number {
+        font-size: 4rem;
+    }
+    
+    .step-title {
+        font-size: 1.8rem;
+    }
+    
+    .step-visual {
+        font-size: 5rem;
+    }
+    
+    .hamburger,
+    .theme-toggle {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .scroll-progress {
+        right: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo-text {
+        font-size: 2.5rem;
+    }
+    
+    .catch-copy {
+        font-size: 1rem;
+    }
+    
+    .section {
+        padding: 80px 0;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .hamburger {
+        top: 20px;
+        right: 20px;
+    }
+    
+    .theme-toggle {
+        bottom: 20px;
+        right: 20px;
+    }
+}
+/* ==========================================
+   Rules セクション - 新規追加
+   ========================================== */
+.rules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 25px;
+    margin-top: 60px;
+}
+
+.rule-button {
+    background: var(--color-white);
+    padding: 35px 30px;
+    border-radius: 20px;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    border: 2px solid transparent;
+    text-decoration: none;
+    color: var(--color-text);
+    display: block;
+    transform: translateZ(0);
+}
+
+.rule-button:hover {
+    transform: translateY(-10px) translateZ(0);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-lg);
+}
+
+.rule-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    display: inline-block;
+    transition: var(--transition-bounce);
+}
+
+.rule-button:hover .rule-icon {
+    transform: scale(1.15) rotate(5deg);
+}
+
+.rule-title {
+    font-size: 1.6rem;
+    margin-bottom: 12px;
+    color: var(--color-text);
+    font-weight: 700;
+}
+
+.rule-description {
+    color: var(--color-text);
+    opacity: 0.7;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+.rule-arrow {
+    position: absolute;
+    bottom: 25px;
+    right: 30px;
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: var(--transition-smooth);
+}
+
+.rule-button:hover .rule-arrow {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* 発光エフェクト */
+.rule-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, var(--color-primary) 0%, transparent 70%);
+    border-radius: 50%;
+    opacity: 0;
+    transition: var(--transition-smooth);
+    pointer-events: none;
+}
+
+.rule-button:hover::before {
+    width: 300px;
+    height: 300px;
+    opacity: 0.15;
+}
+
+/* Rules 注意書き */
+.rules-notice {
+    margin-top: 50px;
+    padding: 25px 35px;
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 152, 0, 0.05) 100%);
+    border-left: 4px solid #ffc107;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.rules-notice p {
+    color: var(--color-text);
+    font-size: 1.1rem;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .rules-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .rule-button {
+        padding: 30px 25px;
+    }
+    
+    .rule-icon {
+        font-size: 2.5rem;
+    }
+    
+    .rule-title {
+        font-size: 1.4rem;
+    }
+    
+    .rules-notice {
+        padding: 20px 25px;
+    }
+    
+    .rules-notice p {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .rule-button {
+        padding: 25px 20px;
+    }
+    
+    .rule-icon {
+        font-size: 2rem;
+    }
+    
+    .rule-title {
+        font-size: 1.2rem;
+    }
+    
+    .rule-description {
+        font-size: 0.9rem;
+    }
+}
+
+/* ==========================================
+   超リッチ動き追加CSS
+   ========================================== */
+
+/* クリック波紋エフェクト */
+.click-ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(127, 215, 255, 0.6) 0%, transparent 70%);
+    transform: scale(0);
+    animation: clickRipple 0.6s ease-out;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+@keyframes clickRipple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* 全画面波紋エフェクト */
+.fullscreen-ripple {
+    position: fixed;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(127, 215, 255, 0.4) 0%, transparent 70%);
+    transform: translate(-50%, -50%) scale(0);
+    animation: fullscreenRipple 1s ease-out;
+    pointer-events: none;
+    z-index: 9998;
+}
+
+@keyframes fullscreenRipple {
+    to {
+        transform: translate(-50%, -50%) scale(50);
+        opacity: 0;
+    }
+}
+
+/* 超巨大波紋エフェクト（ダークモード切り替え用） */
+.massive-ripple {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 3px solid rgba(127, 215, 255, 0.6);
+    transform: translate(-50%, -50%) scale(0);
+    animation: massiveRipple 2s ease-out;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+@keyframes massiveRipple {
+    to {
+        transform: translate(-50%, -50%) scale(200);
+        opacity: 0;
+    }
+}
+
+/* パーティクル爆発エフェクト */
+.explosion-particle {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    background: radial-gradient(circle, rgba(127, 215, 255, 1) 0%, rgba(0, 170, 255, 0.5) 100%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: explode 1s ease-out;
+    pointer-events: none;
+    z-index: 9999;
+    box-shadow: 0 0 10px rgba(127, 215, 255, 0.8);
+}
+
+@keyframes explode {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0);
+        opacity: 0;
+    }
+}
+
+/* ホバーパーティクル */
+.hover-particle {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    background: rgba(127, 215, 255, 0.8);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: hoverFloat 1s ease-out;
+    pointer-events: none;
+    z-index: 9999;
+    box-shadow: 0 0 8px rgba(127, 215, 255, 0.6);
+}
+
+@keyframes hoverFloat {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, calc(-50% - 50px)) scale(0);
+        opacity: 0;
+    }
+}
+
+/* ホバーウェーブ */
+.hover-wave {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(127, 215, 255, 0.5) 0%, transparent 70%);
+    transform: translate(-50%, -50%) scale(0);
+    animation: hoverWave 0.6s ease-out;
+    pointer-events: none;
+}
+
+@keyframes hoverWave {
+    to {
+        transform: translate(-50%, -50%) scale(20);
+        opacity: 0;
+    }
+}
+
+/* ハンバーガーボタンの波紋強化 */
+.hamburger:active {
+    animation: buttonPulse 0.3s ease-out;
+}
+
+@keyframes buttonPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+/* テーマ切り替えボタンの波紋強化 - position固定維持 */
+.theme-toggle:active {
+    animation: buttonSpin 0.6s ease-out;
+}
+
+@keyframes buttonSpin {
+    0% {
+        transform: scale(1) rotate(0deg) translate(0, 0);
+    }
+    50% {
+        transform: scale(1.3) rotate(180deg) translate(0, 0);
+    }
+    100% {
+        transform: scale(1) rotate(360deg) translate(0, 0);
+    }
+}
+
+/* Jobカードのホバー強化 */
+.job-card {
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.job-card:hover {
+    transform: translateY(-20px) scale(1.05);
+    box-shadow: 0 20px 60px rgba(127, 215, 255, 0.4);
+}
+
+.job-card:hover .job-icon {
+    animation: iconBounce 0.6s ease-in-out infinite;
+}
+
+@keyframes iconBounce {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-10px) rotate(5deg);
+    }
+    75% {
+        transform: translateY(-10px) rotate(-5deg);
+    }
+}
+
+/* Ruleボタンのホバー強化 */
+.rule-button {
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.rule-button:hover {
+    transform: translateY(-15px) scale(1.03);
+    box-shadow: 0 15px 50px rgba(127, 215, 255, 0.3);
+}
+
+.rule-button:hover .rule-icon {
+    animation: iconWobble 0.5s ease-in-out;
+}
+
+@keyframes iconWobble {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(-10deg) scale(1.1);
+    }
+    75% {
+        transform: rotate(10deg) scale(1.1);
+    }
+}
+
+/* ステップナビゲーションボタンの強化 */
+.step-nav-btn {
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.step-nav-btn:hover {
+    transform: scale(1.5);
+    box-shadow: 0 0 20px rgba(127, 215, 255, 0.6);
+}
+
+.step-nav-btn.active {
+    animation: navPulse 2s ease-in-out infinite;
+}
+
+@keyframes navPulse {
+    0%, 100% {
+        transform: scale(1.3);
+        box-shadow: 0 0 10px rgba(127, 215, 255, 0.5);
+    }
+    50% {
+        transform: scale(1.5);
+        box-shadow: 0 0 25px rgba(127, 215, 255, 0.8);
+    }
+}
+
+/* Feature カードの強化 */
+.feature-card {
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.feature-card:hover {
+    transform: translateY(-15px) rotate(2deg) scale(1.05);
+    box-shadow: 0 20px 50px rgba(127, 215, 255, 0.4);
+}
+
+.feature-card:hover .feature-icon {
+    animation: iconSpin 1s ease-in-out infinite;
+}
+
+@keyframes iconSpin {
+    0%, 100% {
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        transform: rotate(180deg) scale(1.2);
+    }
+}
+
+/* Status カードの強化 */
+.status-card {
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.status-card:hover {
+    transform: translateY(-15px) scale(1.05);
+    box-shadow: 0 15px 40px rgba(127, 215, 255, 0.3);
+}
+
+.status-card:hover .status-icon {
+    animation: iconZoom 0.6s ease-in-out infinite;
+}
+
+@keyframes iconZoom {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.3);
+    }
+}
+
+/* Support カードの強化 */
+.support-card {
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.support-card:hover {
+    transform: translateY(-15px) scale(1.05);
+    box-shadow: 0 15px 40px rgba(127, 215, 255, 0.3);
+}
+
+.support-card:hover .support-icon {
+    animation: iconShake 0.5s ease-in-out infinite;
+}
+
+@keyframes iconShake {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(-15deg);
+    }
+    75% {
+        transform: rotate(15deg);
+    }
+}
+
+/* Discord ボタンの強化 */
+.discord-button {
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.discord-button:hover {
+    transform: translateY(-8px) scale(1.08);
+    box-shadow: 0 20px 50px rgba(88, 101, 242, 0.5);
+}
+
+.discord-button:hover .discord-icon {
+    animation: iconFloat 1s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+/* スクロールインジケーターの強化 */
+.scroll-indicator {
+    animation: scrollBounceEnhanced 2s ease-in-out infinite;
+}
+
+@keyframes scrollBounceEnhanced {
+    0%, 100% {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+    50% {
+        transform: translateX(-50%) translateY(15px);
+        opacity: 0.7;
+    }
+}
+
+/* キャッチコピーの文字に個別アニメーション強化 */
+.catch-word {
+    animation: floatWordEnhanced 4s ease-in-out infinite;
+}
+
+.catch-word:nth-child(1) { animation-delay: 0s; }
+.catch-word:nth-child(2) { animation-delay: 0.2s; }
+.catch-word:nth-child(3) { animation-delay: 0.4s; }
+.catch-word:nth-child(4) { animation-delay: 0.6s; }
+.catch-word:nth-child(5) { animation-delay: 0.8s; }
+
+@keyframes floatWordEnhanced {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-15px) rotate(2deg);
+    }
+    75% {
+        transform: translateY(-15px) rotate(-2deg);
+    }
+}
+
+/* サーフボードの強化 */
+.surfboard {
+    transition: transform 0.1s ease;
+    animation: surfboardFloat 3s ease-in-out infinite;
+}
+
+@keyframes surfboardFloat {
+    0%, 100% {
+        transform: translateX(-50%) rotate(0deg);
+    }
+    50% {
+        transform: translateX(-50%) rotate(5deg);
+    }
+}
+
+/* ロゴテキストの強化 */
+.logo-text {
+    animation: logoGlow 3s ease-in-out infinite;
+}
+
+@keyframes logoGlow {
+    0%, 100% {
+        text-shadow: 0 4px 20px rgba(127, 215, 255, 0.3);
+    }
+    50% {
+        text-shadow: 0 4px 40px rgba(127, 215, 255, 0.8), 0 0 60px rgba(0, 170, 255, 0.5);
+    }
+}
+
+/* フッターロゴの強化 */
+.footer-logo {
+    transition: all 0.3s ease;
+}
+
+.footer-logo:hover {
+    transform: scale(1.1);
+    text-shadow: 0 0 20px rgba(127, 215, 255, 0.8);
+}
+
+/* レスポンシブ: モバイルではエフェクトを軽量化 */
+@media (max-width: 768px) {
+    .massive-ripple,
+    .explosion-particle,
+    .hover-particle,
+    .hover-wave {
+        display: none;
+    }
+    
+    .job-card:hover,
+    .rule-button:hover,
+    .feature-card:hover,
+    .status-card:hover,
+    .support-card:hover {
+        transform: translateY(-10px);
+    }
+}
+
+/* ===== Hero Video FIX (Ocean Town title visibility) ===== */
+
+/* 1) 動画をヒーロー内にフル敷き */
+.hero .hero-video{
+    position: absolute;
+    inset: 0;
+    z-index: 0;              /* 一番後ろ */
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  /* ===== Hero video credit ===== */
+.hero-video-credit{
+    position: absolute;
+    right: 22px;
+    bottom: 18px;
+    z-index: 4;                 /* ロゴ類より前面 */
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.85);
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(0,0,0,0.28); /* 動画上でも読めるように薄い黒 */
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    pointer-events: none;        /* クリック邪魔しない */
+  }
+  
+  .hero-video-credit .credit-name{
+    font-weight: 700;
+    color: rgba(127,215,255,0.95);
+    text-shadow: 0 2px 10px rgba(0,0,0,0.25);
+  }
+  
+  /* モバイルは少し小さく */
+  @media (max-width: 768px){
+    .hero-video-credit{
+      right: 14px;
+      bottom: 12px;
+      font-size: 11px;
+      padding: 7px 10px;
+    }
+  }
+  
+  
+  .hero .hero-video__media{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 0.45;           /* まずは少し濃いめに（後で調整可） */
+  }
+  
+  /* 2) 既存の白いグラデ（hero-background）を“薄く”して動画を殺さない */
+  .hero .hero-background{
+    z-index: 1; /* 既存通りでOK */
+    background: linear-gradient(180deg,
+      rgba(127, 215, 255, 0.10) 0%,
+      rgba(247, 251, 255, 0.25) 55%,
+      rgba(247, 251, 255, 0.15) 100%
+    );
+  }
+  
+  /* 3) ロゴ・キャッチ・スクロールを“強制的に最前面”へ */
+  .hero .logo-container,
+  .hero .catch-copy,
+  .hero .scroll-indicator{
+    position: relative;
+    z-index: 3;
+  }
+  
+  /* ロゴ文字が動画背景で埋もれる場合の保険（見た目はほぼ変えずに視認性UP） */
+  .hero .logo-text{
+    text-shadow:
+      0 6px 24px rgba(0,0,0,0.25),
+      0 0 40px rgba(127, 215, 255, 0.35);
+  }
+  .hero .catch-copy{
+    text-shadow: 0 4px 18px rgba(0,0,0,0.20);
+  }
+  
