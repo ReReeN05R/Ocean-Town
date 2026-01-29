@@ -1,975 +1,719 @@
-/* ==========================================
-   Ocean Town - 超リッチ動き重視版 JavaScript
-   20-30fps基準、動きを最大限に
-   ========================================== */
+/* =========================================================
+  Ocean Town 公式ポータル（実運用前提）
+  - GSAP + ScrollTrigger
+  - 水面歪みキャンバス（穏やか）
+  - マウス反応の波紋（控えめ）
+  - HERO：水の粒子からロゴ形成（文字粒子）
+  - キャッチコピー：文字ごとにゆっくり上下に
+========================================================= */
 
-(function() {
-    'use strict';
+(() => {
+  "use strict";
 
-    /* ==========================================
-       グローバル変数
-       ========================================== */
-    let mouseX = 0;
-    let mouseY = 0;
-    let scrollProgress = 0;
-    let isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let isMobile = window.innerWidth < 768;
-    
-    // パフォーマンス設定（動き重視）
-    const PERFORMANCE_CONFIG = {
-        maxRipples: 30,                          // 波紋を大幅増加
-        particleCount: isMobile ? 120 : 180,     // パーティクル大幅増加
-        targetFPS: isMobile ? 20 : 30,           // 20-30fps
-        canvasUpdateThrottle: isMobile ? 50 : 33, // 20fps/30fps
-        rippleProbability: 0.92,                 // 超高確率
-        buttonRippleEnabled: true,               // ボタン波紋有効
+  /* -----------------------------
+    共通：テーマ切替（任意機能）
+  ----------------------------- */
+  const themeToggle = document.getElementById("themeToggle");
+  const root = document.documentElement;
+
+  // 保存済みテーマの復元（実運用でよくある要件）
+  const savedTheme = localStorage.getItem("oceanTheme");
+  if (savedTheme === "dark") root.setAttribute("data-theme", "dark");
+
+  themeToggle?.addEventListener("click", () => {
+    const isDark = root.getAttribute("data-theme") === "dark";
+    if (isDark) {
+      root.removeAttribute("data-theme");
+      localStorage.setItem("oceanTheme", "light");
+    } else {
+      root.setAttribute("data-theme", "dark");
+      localStorage.setItem("oceanTheme", "dark");
+    }
+  });
+
+  /* -----------------------------
+    GSAP初期化
+  ----------------------------- */
+  if (window.gsap && window.ScrollTrigger) {
+    gsap.registerPlugin(ScrollTrigger);
+  }
+
+  /* =========================================================
+    1) グローバル水面キャンバス
+  ========================================================= */
+  const oceanCanvas = document.getElementById("ocean-canvas");
+  const oceanCtx = oceanCanvas?.getContext("2d", { alpha: true });
+
+  const ocean = {
+    w: 0,
+    h: 0,
+    t: 0,
+    dpr: Math.min(window.devicePixelRatio || 1, 2),
+    ripples: [],
+    mouse: { x: 0.5, y: 0.5, vx: 0, vy: 0, active: false }
+  };
+
+  function resizeOcean() {
+    if (!oceanCanvas || !oceanCtx) return;
+    ocean.w = window.innerWidth;
+    ocean.h = window.innerHeight;
+    oceanCanvas.width = Math.floor(ocean.w * ocean.dpr);
+    oceanCanvas.height = Math.floor(ocean.h * ocean.dpr);
+    oceanCanvas.style.width = ocean.w + "px";
+    oceanCanvas.style.height = ocean.h + "px";
+    oceanCtx.setTransform(ocean.dpr, 0, 0, ocean.dpr, 0, 0);
+  }
+
+  function addRipple(x, y, strength = 1) {
+    ocean.ripples.push({
+      x,
+      y,
+      r: 0,
+      a: 0.25 * strength,   // 透明度（控えめ）
+      s: 1.4 + 0.8 * strength, // 拡散速度
+      life: 0
+    });
+    if (ocean.ripples.length > 28) ocean.ripples.shift();
+  }
+
+  function drawOcean() {
+    if (!oceanCanvas || !oceanCtx) return;
+
+    const ctx = oceanCtx;
+    const w = ocean.w;
+    const h = ocean.h;
+    ocean.t += 0.008;
+
+    ctx.clearRect(0, 0, w, h);
+
+    const base = ctx.createLinearGradient(0, 0, 0, h);
+    base.addColorStop(0, "rgba(127,215,255,0.10)");
+    base.addColorStop(0.55, "rgba(79,195,247,0.06)");
+    base.addColorStop(1, "rgba(255,255,255,0.00)");
+    ctx.fillStyle = base;
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.save();
+    ctx.globalCompositeOperation = "screen";
+    for (let i = 0; i < 7; i++) {
+      const y = (h * (0.12 + i * 0.12)) + Math.sin(ocean.t * (1.1 + i * 0.12)) * 10;
+      ctx.beginPath();
+      const amp = 10 + i * 1.8;
+      const freq = 0.012 + i * 0.0012;
+
+      for (let x = 0; x <= w; x += 18) {
+        const wave =
+          Math.sin(ocean.t * 1.2 + x * freq) * amp +
+          Math.sin(ocean.t * 0.7 + x * (freq * 1.6)) * (amp * 0.35);
+
+        const dx = x / w - ocean.mouse.x;
+        const dy = y / h - ocean.mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const influence = Math.max(0, 1 - dist * 2.2) * (ocean.mouse.active ? 6 : 2);
+
+        const yy = y + wave + influence * 0.2;
+        if (x === 0) ctx.moveTo(x, yy);
+        else ctx.lineTo(x, yy);
+      }
+
+      ctx.strokeStyle = `rgba(255,255,255,${0.08 - i * 0.007})`;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    for (let i = ocean.ripples.length - 1; i >= 0; i--) {
+      const r = ocean.ripples[i];
+      r.life += 1;
+      r.r += r.s;
+      r.a *= 0.986;
+
+      ctx.beginPath();
+      ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(127,215,255,${r.a})`;
+      ctx.lineWidth = 1.0;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(r.x, r.y, r.r * 1.22, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(255,255,255,${r.a * 0.55})`;
+      ctx.lineWidth = 0.9;
+      ctx.stroke();
+
+      if (r.a < 0.01 || r.r > Math.max(w, h) * 0.6 || r.life > 420) {
+        ocean.ripples.splice(i, 1);
+      }
+    }
+
+    requestAnimationFrame(drawOcean);
+  }
+
+  function bindOceanInput() {
+    if (!oceanCanvas) return;
+
+    const onMove = (clientX, clientY) => {
+      const x = clientX / ocean.w;
+      const y = clientY / ocean.h;
+
+      const vx = x - ocean.mouse.x;
+      const vy = y - ocean.mouse.y;
+      ocean.mouse.vx = vx;
+      ocean.mouse.vy = vy;
+
+      ocean.mouse.x = x;
+      ocean.mouse.y = y;
+      ocean.mouse.active = true;
+
+      if (Math.abs(vx) + Math.abs(vy) > 0.004) {
+        addRipple(clientX, clientY, 0.8);
+      }
     };
 
-    /* ==========================================
-       初期化
-       ========================================== */
-    document.addEventListener('DOMContentLoaded', function() {
-        initWaterCanvas();
-        initLogoParticles();
-        initHamburgerMenu();
-        initThemeToggle();
-        initScrollProgress();
-        initCatchCopy();
-        initJobCards();
-        initRuleButtons();
-        initStepNavigation();
-        initButtonRipples();
-        initAllButtonRipples(); // すべてのボタンに波紋追加
-        initGSAPAnimations();
-        initLiveStatus();
-        initParticleTrail(); // マウス追従パーティクル
-        
-        window.addEventListener('resize', debounce(() => {
-            isMobile = window.innerWidth < 768;
-        }, 250));
+    window.addEventListener("mousemove", (e) => onMove(e.clientX, e.clientY), { passive: true });
+    window.addEventListener("mouseleave", () => { ocean.mouse.active = false; }, { passive: true });
+
+    window.addEventListener("touchmove", (e) => {
+      const t = e.touches?.[0];
+      if (!t) return;
+      onMove(t.clientX, t.clientY);
+    }, { passive: true });
+
+    window.addEventListener("touchstart", (e) => {
+      const t = e.touches?.[0];
+      if (!t) return;
+      addRipple(t.clientX, t.clientY, 1.0);
+    }, { passive: true });
+  }
+
+  resizeOcean();
+  bindOceanInput();
+  window.addEventListener("resize", resizeOcean, { passive: true });
+  requestAnimationFrame(drawOcean);
+
+  /* =========================================================
+    2) HERO：粒子からロゴ形成（Canvas）
+  ========================================================= */
+  const logoCanvas = document.getElementById("logo-canvas");
+  const logoCtx = logoCanvas?.getContext("2d");
+
+  const logoFx = {
+    w: 0,
+    h: 0,
+    dpr: Math.min(window.devicePixelRatio || 1, 2),
+    particles: [],
+    targetPoints: [],
+    ready: false,
+    formed: false,
+    t: 0
+  };
+
+  function resizeLogo() {
+    if (!logoCanvas || !logoCtx) return;
+    const rect = logoCanvas.getBoundingClientRect();
+    logoFx.w = rect.width;
+    logoFx.h = rect.height;
+
+    logoCanvas.width = Math.floor(logoFx.w * logoFx.dpr);
+    logoCanvas.height = Math.floor(logoFx.h * logoFx.dpr);
+    logoCanvas.style.width = rect.width + "px";
+    logoCanvas.style.height = rect.height + "px";
+    logoCtx.setTransform(logoFx.dpr, 0, 0, logoFx.dpr, 0, 0);
+
+    buildLogoTargets();
+    seedLogoParticles();
+  }
+
+  function buildLogoTargets() {
+    if (!logoCanvas || !logoCtx) return;
+
+    const ctx = logoCtx;
+    const w = logoFx.w;
+    const h = logoFx.h;
+
+    ctx.clearRect(0, 0, w, h);
+
+    const plate = ctx.createLinearGradient(0, 0, w, h);
+    plate.addColorStop(0, "rgba(255,255,255,0.10)");
+    plate.addColorStop(1, "rgba(127,215,255,0.08)");
+    ctx.fillStyle = plate;
+    ctx.fillRect(0, 0, w, h);
+
+    const fontSize = Math.max(44, Math.min(84, w * 0.11));
+    ctx.font = `600 ${fontSize}px ${getComputedStyle(document.documentElement).getPropertyValue("--font-serif") || "serif"}`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    ctx.fillStyle = "rgba(255,255,255,1)";
+    ctx.fillText("Ocean Town", w * 0.5, h * 0.52);
+
+    const img = ctx.getImageData(0, 0, w, h);
+    const data = img.data;
+    const points = [];
+    const step = Math.max(4, Math.floor(logoFx.w / 160));
+
+    for (let y = 0; y < h; y += step) {
+      for (let x = 0; x < w; x += step) {
+        const idx = (y * w + x) * 4;
+        const a = data[idx + 3];
+        if (a > 190) points.push({ x, y });
+      }
+    }
+
+    logoFx.targetPoints = points;
+    logoFx.ready = true;
+
+    ctx.clearRect(0, 0, w, h);
+  }
+
+  function seedLogoParticles() {
+    if (!logoFx.ready) return;
+
+    const w = logoFx.w;
+    const h = logoFx.h;
+
+    const count = Math.min(1600, Math.max(700, Math.floor(logoFx.targetPoints.length * 0.78)));
+    logoFx.particles = [];
+
+    for (let i = 0; i < count; i++) {
+      const p = logoFx.targetPoints[Math.floor(Math.random() * logoFx.targetPoints.length)];
+      const angle = Math.random() * Math.PI * 2;
+      const radius = Math.max(w, h) * (0.55 + Math.random() * 0.55);
+
+      logoFx.particles.push({
+        x: w * 0.5 + Math.cos(angle) * radius,
+        y: h * 0.5 + Math.sin(angle) * radius * 0.42,
+        vx: 0,
+        vy: 0,
+        tx: p.x,
+        ty: p.y,
+        size: 1.2 + Math.random() * 1.6,
+        hue: 195 + Math.random() * 20,
+        a: 0.35 + Math.random() * 0.45
+      });
+    }
+
+    logoFx.formed = false;
+  }
+
+  function drawLogo() {
+    if (!logoCanvas || !logoCtx || !logoFx.ready) return;
+
+    const ctx = logoCtx;
+    const w = logoFx.w;
+    const h = logoFx.h;
+    logoFx.t += 0.012;
+
+    ctx.clearRect(0, 0, w, h);
+
+    const bg = ctx.createLinearGradient(0, 0, w, h);
+    bg.addColorStop(0, "rgba(255,255,255,0.10)");
+    bg.addColorStop(1, "rgba(127,215,255,0.08)");
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, w, h);
+
+    let formedCount = 0;
+
+    for (let i = 0; i < logoFx.particles.length; i++) {
+      const p = logoFx.particles[i];
+
+      if (!logoFx.formed && Math.random() < 0.008) {
+        const t = logoFx.targetPoints[Math.floor(Math.random() * logoFx.targetPoints.length)];
+        p.tx = t.x; p.ty = t.y;
+      }
+
+      const dx = p.tx - p.x;
+      const dy = p.ty - p.y;
+
+      p.vx += dx * 0.008;
+      p.vy += dy * 0.008;
+      p.vx *= 0.86;
+      p.vy *= 0.86;
+
+      if (logoFx.formed) {
+        p.vx += Math.sin(logoFx.t + i * 0.01) * 0.02;
+        p.vy += Math.cos(logoFx.t + i * 0.012) * 0.02;
+      }
+
+      p.x += p.vx;
+      p.y += p.vy;
+
+      if (Math.abs(dx) + Math.abs(dy) < 1.2) formedCount++;
+
+      ctx.beginPath();
+      ctx.fillStyle = `hsla(${p.hue}, 90%, 70%, ${p.a})`;
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(255,255,255,${p.a * 0.45})`;
+      ctx.arc(p.x + 0.4, p.y - 0.4, p.size * 0.6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    if (!logoFx.formed && formedCount > logoFx.particles.length * 0.78) {
+      logoFx.formed = true;
+    }
+
+    requestAnimationFrame(drawLogo);
+  }
+
+  resizeLogo();
+  window.addEventListener("resize", resizeLogo, { passive: true });
+  requestAnimationFrame(drawLogo);
+
+  /* =========================================================
+    3) HERO：キャッチコピー（文字ごとに表示＋上下に揺れ）
+  ========================================================= */
+  const taglineChars = document.querySelectorAll("#heroTagline .char");
+  if (window.gsap && taglineChars.length) {
+    gsap.to(taglineChars, {
+      opacity: 1,
+      y: 0,
+      duration: 1.2,
+      stagger: 0.045,
+      ease: "power2.out",
+      delay: 0.4
     });
 
-    /* ==========================================
-       デバウンス関数
-       ========================================== */
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-
-    /* ==========================================
-       Canvas水面エフェクト - 超リッチ版
-       ========================================== */
-    function initWaterCanvas() {
-        const canvas = document.getElementById('waterCanvas');
-        if (!canvas || isReducedMotion) return;
-
-        const ctx = canvas.getContext('2d', { alpha: true });
-        
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
-        const ripples = [];
-        let isVisible = true;
-        let lastTime = 0;
-
-        window.addEventListener('resize', debounce(() => {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-        }, 250));
-
-        document.addEventListener('visibilitychange', () => {
-            isVisible = !document.hidden;
-        });
-
-        // マウス移動で波紋生成（高頻度）
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-
-            // 超高確率で波紋生成
-            if (Math.random() > PERFORMANCE_CONFIG.rippleProbability && ripples.length < PERFORMANCE_CONFIG.maxRipples) {
-                ripples.push({
-                    x: mouseX,
-                    y: mouseY,
-                    radius: 0,
-                    maxRadius: 120 + Math.random() * 80,
-                    speed: 2.5 + Math.random() * 1.5,
-                    opacity: 0.6,
-                    color: Math.random() > 0.5 ? 'rgba(127, 215, 255,' : 'rgba(0, 170, 255,'
-                });
-            }
-        });
-
-        // クリックで超大きな波紋
-        document.addEventListener('click', (e) => {
-            for (let i = 0; i < 3; i++) {
-                ripples.push({
-                    x: e.clientX,
-                    y: e.clientY,
-                    radius: i * 20,
-                    maxRadius: 250 + i * 50,
-                    speed: 4 + i * 0.5,
-                    opacity: 0.8 - i * 0.2,
-                    color: 'rgba(127, 215, 255,'
-                });
-            }
-        });
-
-        // アニメーションループ
-        function animate(currentTime) {
-            if (!isVisible) {
-                requestAnimationFrame(animate);
-                return;
-            }
-
-            const deltaTime = currentTime - lastTime;
-            if (deltaTime < PERFORMANCE_CONFIG.canvasUpdateThrottle) {
-                requestAnimationFrame(animate);
-                return;
-            }
-            lastTime = currentTime;
-
-            ctx.clearRect(0, 0, width, height);
-
-            // 背景グラデーション（強化）
-            const gradient = ctx.createLinearGradient(0, 0, 0, height);
-            gradient.addColorStop(0, 'rgba(127, 215, 255, 0.05)');
-            gradient.addColorStop(0.5, 'rgba(0, 170, 255, 0.03)');
-            gradient.addColorStop(1, 'rgba(79, 195, 247, 0.05)');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, height);
-
-            // 波紋の描画
-            for (let i = ripples.length - 1; i >= 0; i--) {
-                const ripple = ripples[i];
-
-                // 外側の波紋（太く）
-                ctx.beginPath();
-                ctx.arc(ripple.x, ripple.y, ripple.radius, 0, Math.PI * 2);
-                ctx.strokeStyle = `${ripple.color}${ripple.opacity})`;
-                ctx.lineWidth = 3;
-                ctx.stroke();
-
-                // 内側の波紋
-                if (ripple.radius > 15) {
-                    ctx.beginPath();
-                    ctx.arc(ripple.x, ripple.y, ripple.radius * 0.7, 0, Math.PI * 2);
-                    ctx.strokeStyle = `rgba(0, 170, 255, ${ripple.opacity * 0.6})`;
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                }
-
-                // 中間の波紋（追加）
-                if (ripple.radius > 30) {
-                    ctx.beginPath();
-                    ctx.arc(ripple.x, ripple.y, ripple.radius * 0.85, 0, Math.PI * 2);
-                    ctx.strokeStyle = `rgba(79, 195, 247, ${ripple.opacity * 0.4})`;
-                    ctx.lineWidth = 1.5;
-                    ctx.stroke();
-                }
-
-                ripple.radius += ripple.speed;
-                ripple.opacity -= 0.004; // ゆっくり消える
-
-                if (ripple.opacity <= 0 || ripple.radius >= ripple.maxRadius) {
-                    ripples.splice(i, 1);
-                }
-            }
-
-            requestAnimationFrame(animate);
-        }
-
-        requestAnimationFrame(animate);
-    }
-
-    /* ==========================================
-       ロゴパーティクルアニメーション - 超リッチ版
-       ========================================== */
-    function initLogoParticles() {
-        const canvas = document.getElementById('logoCanvas');
-        if (!canvas || isReducedMotion) return;
-
-        const ctx = canvas.getContext('2d', { alpha: true });
-        canvas.width = 600;
-        canvas.height = 200;
-
-        const particles = [];
-        const particleCount = PERFORMANCE_CONFIG.particleCount;
-        let isVisible = true;
-        let lastTime = 0;
-
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                isVisible = entry.isIntersecting;
-            });
-        }, { threshold: 0 });
-        observer.observe(canvas);
-
-        class Particle {
-            constructor() {
-                this.reset();
-                this.targetX = Math.random() * canvas.width;
-                this.targetY = Math.random() * canvas.height;
-                this.x = this.targetX;
-                this.y = this.targetY;
-            }
-
-            reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.targetX = Math.random() * canvas.width;
-                this.targetY = Math.random() * canvas.height;
-                this.size = Math.random() * 3.5 + 1.5; // サイズ大きく
-                this.speedX = (Math.random() - 0.5) * 2.5;
-                this.speedY = (Math.random() - 0.5) * 2.5;
-                this.opacity = Math.random() * 0.6 + 0.4;
-            }
-
-            update() {
-                const dx = this.targetX - this.x;
-                const dy = this.targetY - this.y;
-                this.x += dx * 0.05 + this.speedX;
-                this.y += dy * 0.05 + this.speedY;
-
-                this.speedX += (Math.random() - 0.5) * 0.15;
-                this.speedY += (Math.random() - 0.5) * 0.15;
-                this.speedX *= 0.95;
-                this.speedY *= 0.95;
-
-                if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
-                    this.reset();
-                }
-            }
-
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(127, 215, 255, ${this.opacity})`;
-                ctx.fill();
-
-                // 強化された発光効果
-                ctx.shadowBlur = 15;
-                ctx.shadowColor = 'rgba(127, 215, 255, 0.8)';
-            }
-        }
-
-        for (let i = 0; i < particleCount; i++) {
-            particles.push(new Particle());
-        }
-
-        function animate(currentTime) {
-            if (!isVisible) {
-                requestAnimationFrame(animate);
-                return;
-            }
-
-            const deltaTime = currentTime - lastTime;
-            if (deltaTime < PERFORMANCE_CONFIG.canvasUpdateThrottle) {
-                requestAnimationFrame(animate);
-                return;
-            }
-            lastTime = currentTime;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            particles.forEach(particle => {
-                particle.update();
-                particle.draw();
-            });
-
-            // パーティクル間の線（増量）
-            const maxConnections = 8;
-            particles.forEach((p1, i) => {
-                let connections = 0;
-                for (let j = i + 1; j < particles.length && connections < maxConnections; j++) {
-                    const p2 = particles[j];
-                    const dx = p1.x - p2.x;
-                    const dy = p1.y - p2.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-
-                    if (distance < 120) { // 距離を伸ばす
-                        ctx.beginPath();
-                        ctx.moveTo(p1.x, p1.y);
-                        ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `rgba(127, 215, 255, ${0.25 * (1 - distance / 120)})`;
-                        ctx.lineWidth = 0.8;
-                        ctx.stroke();
-                        connections++;
-                    }
-                }
-            });
-
-            requestAnimationFrame(animate);
-        }
-
-        requestAnimationFrame(animate);
-    }
-
-    /* ==========================================
-       マウス追従パーティクル（新規追加）
-       ========================================== */
-    function initParticleTrail() {
-        if (isReducedMotion || isMobile) return;
-
-        const trailParticles = [];
-
-        document.addEventListener('mousemove', (e) => {
-            if (Math.random() > 0.7) { // 30%の確率で生成
-                trailParticles.push({
-                    x: e.clientX,
-                    y: e.clientY,
-                    size: Math.random() * 4 + 2,
-                    opacity: 1,
-                    vx: (Math.random() - 0.5) * 2,
-                    vy: (Math.random() - 0.5) * 2,
-                    life: 1
-                });
-            }
-        });
-
-        function animateTrail() {
-            const canvas = document.getElementById('waterCanvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-
-            for (let i = trailParticles.length - 1; i >= 0; i--) {
-                const p = trailParticles[i];
-
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(127, 215, 255, ${p.opacity * 0.5})`;
-                ctx.fill();
-
-                p.x += p.vx;
-                p.y += p.vy;
-                p.opacity -= 0.02;
-                p.life -= 0.02;
-
-                if (p.life <= 0) {
-                    trailParticles.splice(i, 1);
-                }
-            }
-
-            requestAnimationFrame(animateTrail);
-        }
-
-        animateTrail();
-    }
-
-    /* ==========================================
-       すべてのボタンに波紋エフェクト（新規追加）
-       ========================================== */
-    function initAllButtonRipples() {
-        // すべてのクリッカブル要素を取得（theme-toggleを除外）
-        const clickableElements = document.querySelectorAll('button:not(#themeToggle), .hamburger, .job-card, .rule-button, .feature-card, .status-card, .support-card, .step-nav-btn');
-
-        clickableElements.forEach(element => {
-            element.addEventListener('click', function(e) {
-                createRippleEffect(e, this);
-            });
-        });
-
-        function createRippleEffect(e, element) {
-            const ripple = document.createElement('span');
-            ripple.classList.add('click-ripple');
-
-            const rect = element.getBoundingClientRect();
-            const size = Math.max(rect.width, rect.height);
-            const x = e.clientX - rect.left - size / 2;
-            const y = e.clientY - rect.top - size / 2;
-
-            ripple.style.width = ripple.style.height = `${size}px`;
-            ripple.style.left = `${x}px`;
-            ripple.style.top = `${y}px`;
-
-            // position: fixedの要素は除外（安全のため）
-            const computedStyle = window.getComputedStyle(element);
-            if (computedStyle.position !== 'fixed') {
-                element.style.position = 'relative';
-            }
-            element.style.overflow = 'hidden';
-            element.appendChild(ripple);
-
-            setTimeout(() => {
-                ripple.remove();
-            }, 600);
-        }
-    }
-
-    /* ==========================================
-       キャッチコピーアニメーション
-       ========================================== */
-    function initCatchCopy() {
-        const words = document.querySelectorAll('.catch-word');
-        
-        words.forEach((word, index) => {
-            setTimeout(() => {
-                word.style.opacity = '1';
-                word.style.transform = 'translateY(0)';
-                word.style.animationDelay = `${index * 0.2}s`;
-            }, index * 200);
-        });
-    }
-
-    /* ==========================================
-       ハンバーガーメニュー - 強化版
-       ========================================== */
-    function initHamburgerMenu() {
-        const hamburger = document.getElementById('hamburger');
-        const nav = document.getElementById('fullscreenNav');
-        const navLinks = document.querySelectorAll('.nav-link');
-
-        if (!hamburger || !nav) return;
-
-        hamburger.addEventListener('click', function(e) {
-            hamburger.classList.toggle('active');
-            nav.classList.toggle('active');
-            document.body.style.overflow = nav.classList.contains('active') ? 'hidden' : '';
-
-            // クリック位置から波紋を広げる
-            createFullScreenRipple(e.clientX, e.clientY);
-        });
-
-        navLinks.forEach(link => {
-            link.addEventListener('click', function() {
-                hamburger.classList.remove('active');
-                nav.classList.remove('active');
-                document.body.style.overflow = '';
-            });
-        });
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && nav.classList.contains('active')) {
-                hamburger.classList.remove('active');
-                nav.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        });
-
-        // 全画面波紋エフェクト
-        function createFullScreenRipple(x, y) {
-            const ripple = document.createElement('div');
-            ripple.className = 'fullscreen-ripple';
-            ripple.style.left = `${x}px`;
-            ripple.style.top = `${y}px`;
-            document.body.appendChild(ripple);
-
-            setTimeout(() => {
-                ripple.remove();
-            }, 1000);
-        }
-    }
-
-    /* ==========================================
-       ダークモード切り替え - 超強化版
-       ========================================== */
-    function initThemeToggle() {
-        const toggle = document.getElementById('themeToggle');
-        if (!toggle) return;
-
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            document.body.classList.add('dark-mode');
-        }
-
-        toggle.addEventListener('click', function(e) {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-
-            // ボタンの中心座標を取得
-            const rect = toggle.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-
-            // 超派手な波紋エフェクト
-            createMassiveRipple(centerX, centerY, isDark);
-            
-            // パーティクル爆発
-            createParticleExplosion(centerX, centerY);
-        });
-
-        // 超巨大波紋エフェクト（修正版：ボタン位置を取得）
-        function createMassiveRipple(x, y, isDark) {
-            // ボタンの実際の位置を取得
-            const button = document.getElementById('themeToggle');
-            if (button) {
-                const rect = button.getBoundingClientRect();
-                x = rect.left + rect.width / 2;
-                y = rect.top + rect.height / 2;
-            }
-            
-            for (let i = 0; i < 5; i++) {
-                setTimeout(() => {
-                    const ripple = document.createElement('div');
-                    ripple.className = 'massive-ripple';
-                    ripple.style.left = `${x}px`;
-                    ripple.style.top = `${y}px`;
-                    ripple.style.animationDelay = `${i * 0.1}s`;
-                    ripple.style.borderColor = isDark ? 'rgba(127, 215, 255, 0.5)' : 'rgba(255, 193, 7, 0.5)';
-                    document.body.appendChild(ripple);
-
-                    setTimeout(() => {
-                        ripple.remove();
-                    }, 2000);
-                }, i * 100);
-            }
-        }
-
-        // パーティクル爆発エフェクト（修正版：ボタン位置を取得）
-        function createParticleExplosion(x, y) {
-            // ボタンの実際の位置を取得
-            const button = document.getElementById('themeToggle');
-            if (button) {
-                const rect = button.getBoundingClientRect();
-                x = rect.left + rect.width / 2;
-                y = rect.top + rect.height / 2;
-            }
-            
-            const particleCount = 20;
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'explosion-particle';
-                particle.style.left = `${x}px`;
-                particle.style.top = `${y}px`;
-                
-                const angle = (Math.PI * 2 * i) / particleCount;
-                const velocity = 100 + Math.random() * 100;
-                const tx = Math.cos(angle) * velocity;
-                const ty = Math.sin(angle) * velocity;
-                
-                particle.style.setProperty('--tx', `${tx}px`);
-                particle.style.setProperty('--ty', `${ty}px`);
-                
-                document.body.appendChild(particle);
-
-                setTimeout(() => {
-                    particle.remove();
-                }, 1000);
-            }
-        }
-    }
-
-    /* ==========================================
-       スクロールプログレス（サーフボード）
-       ========================================== */
-    function initScrollProgress() {
-        const surfboard = document.querySelector('.surfboard');
-        if (!surfboard) return;
-
-        window.addEventListener('scroll', () => {
-            const windowHeight = window.innerHeight;
-            const documentHeight = document.documentElement.scrollHeight;
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            
-            scrollProgress = scrollTop / (documentHeight - windowHeight);
-            const maxTop = windowHeight - 100;
-            
-            surfboard.style.top = `${scrollProgress * maxTop}px`;
-        });
-    }
-
-    /* ==========================================
-       Job カードのホバーエフェクト - 強化版
-       ========================================== */
-    function initJobCards() {
-        const jobCards = document.querySelectorAll('.job-card');
-
-        jobCards.forEach(card => {
-            card.addEventListener('mouseenter', function(e) {
-                jobCards.forEach(otherCard => {
-                    if (otherCard !== card) {
-                        otherCard.style.opacity = '0.5';
-                        otherCard.style.transform = 'scale(0.95)';
-                    }
-                });
-
-                // ホバー時にパーティクル発生
-                createHoverParticles(e);
-            });
-
-            card.addEventListener('mouseleave', function() {
-                jobCards.forEach(otherCard => {
-                    otherCard.style.opacity = '1';
-                    otherCard.style.transform = 'scale(1)';
-                });
-            });
-
-            card.addEventListener('mousemove', createHoverParticles);
-        });
-
-        function createHoverParticles(e) {
-            if (Math.random() > 0.8) {
-                const particle = document.createElement('div');
-                particle.className = 'hover-particle';
-                particle.style.left = `${e.clientX}px`;
-                particle.style.top = `${e.clientY}px`;
-                document.body.appendChild(particle);
-
-                setTimeout(() => {
-                    particle.remove();
-                }, 1000);
-            }
-        }
-    }
-
-    /* ==========================================
-       Rule ボタンのホバーエフェクト - 強化版
-       ========================================== */
-    function initRuleButtons() {
-        const ruleButtons = document.querySelectorAll('.rule-button');
-
-        ruleButtons.forEach(button => {
-            button.addEventListener('mouseenter', function(e) {
-                this.style.willChange = 'transform';
-                createHoverWave(e, this);
-            });
-
-            button.addEventListener('mouseleave', function() {
-                this.style.willChange = 'auto';
-            });
-        });
-
-        function createHoverWave(e, element) {
-            const wave = document.createElement('div');
-            wave.className = 'hover-wave';
-            const rect = element.getBoundingClientRect();
-            wave.style.left = `${e.clientX - rect.left}px`;
-            wave.style.top = `${e.clientY - rect.top}px`;
-            element.appendChild(wave);
-
-            setTimeout(() => {
-                wave.remove();
-            }, 600);
-        }
-    }
-
-    /* ==========================================
-       How to Join ステップナビゲーション
-       ========================================== */
-    function initStepNavigation() {
-        const stepItems = document.querySelectorAll('.step-item');
-        const navButtons = document.querySelectorAll('.step-nav-btn');
-        let currentStep = 1;
-        let autoPlayInterval;
-
-        function showStep(stepNumber) {
-            stepItems.forEach(item => {
-                item.classList.remove('active');
-                if (parseInt(item.dataset.step) === stepNumber) {
-                    item.classList.add('active');
-                }
-            });
-
-            navButtons.forEach(btn => {
-                btn.classList.remove('active');
-                if (parseInt(btn.dataset.target) === stepNumber) {
-                    btn.classList.add('active');
-                }
-            });
-
-            currentStep = stepNumber;
-        }
-
-        navButtons.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const targetStep = parseInt(this.dataset.target);
-                showStep(targetStep);
-                stopAutoPlay();
-            });
-        });
-
-        function startAutoPlay() {
-            autoPlayInterval = setInterval(() => {
-                currentStep = currentStep >= stepItems.length ? 1 : currentStep + 1;
-                showStep(currentStep);
-            }, 5000);
-        }
-
-        function stopAutoPlay() {
-            if (autoPlayInterval) {
-                clearInterval(autoPlayInterval);
-            }
-        }
-
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    startAutoPlay();
-                } else {
-                    stopAutoPlay();
-                }
-            });
-        }, { threshold: 0.5 });
-
-        const stepsContainer = document.querySelector('.steps-container');
-        if (stepsContainer) {
-            observer.observe(stepsContainer);
-        }
-    }
-
-    /* ==========================================
-       ボタンリップルエフェクト
-       ========================================== */
-    function initButtonRipples() {
-        const buttons = document.querySelectorAll('.step-button, .discord-button');
-
-        buttons.forEach(button => {
-            button.addEventListener('click', function(e) {
-                const ripple = this.querySelector('.button-ripple');
-                if (!ripple) return;
-
-                const rect = this.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-
-                ripple.style.left = `${x}px`;
-                ripple.style.top = `${y}px`;
-
-                ripple.style.animation = 'none';
-                requestAnimationFrame(() => {
-                    ripple.style.animation = '';
-                });
-            });
-        });
-    }
-
-    /* ==========================================
-       GSAP ScrollTrigger アニメーション - 強化版
-       ========================================== */
-    function initGSAPAnimations() {
-        if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
-            console.warn('GSAP or ScrollTrigger not loaded');
-            return;
-        }
-
-        gsap.registerPlugin(ScrollTrigger);
-
-        // セクションタイトル - 修正版（自然な動き）
-        gsap.utils.toArray('.section-title').forEach(title => {
-            gsap.from(title, {
-                scrollTrigger: {
-                    trigger: title,
-                    start: 'top 80%',
-                    end: 'top 60%',
-                    scrub: 0.5,
-                    toggleActions: 'play none none reverse',
-                },
-                y: 50,
-                opacity: 0,
-                scale: 0.9,
-                duration: 0.8,
-            });
-        });
-
-        // Feature カード - 修正版（自然な動き）
-        gsap.utils.toArray('.feature-card').forEach((card, index) => {
-            gsap.from(card, {
-                scrollTrigger: {
-                    trigger: card,
-                    start: 'top 85%',
-                    toggleActions: 'play none none reverse',
-                },
-                y: 60,
-                opacity: 0,
-                scale: 0.9,
-                duration: 0.6,
-                delay: index * 0.1,
-                ease: 'power2.out',
-            });
-        });
-
-        // Job カード - 修正版（自然な動き）
-        gsap.utils.toArray('.job-card').forEach((card, index) => {
-            gsap.from(card, {
-                scrollTrigger: {
-                    trigger: card,
-                    start: 'top 85%',
-                    toggleActions: 'play none none reverse',
-                },
-                y: 80,
-                opacity: 0,
-                scale: 0.85,
-                rotation: index % 2 === 0 ? -5 : 5,
-                duration: 0.8,
-                delay: index * 0.08,
-                ease: 'back.out(1.2)',
-            });
-        });
-
-        // Rule ボタン - 修正版（自然な動き）
-        gsap.utils.toArray('.rule-button').forEach((button, index) => {
-            gsap.from(button, {
-                scrollTrigger: {
-                    trigger: button,
-                    start: 'top 85%',
-                    toggleActions: 'play none none reverse',
-                },
-                y: 60,
-                opacity: 0,
-                scale: 0.9,
-                duration: 0.7,
-                delay: index * 0.06,
-                ease: 'power2.out',
-            });
-        });
-
-        // Status カード - 修正版（自然な動き）
-        gsap.utils.toArray('.status-card').forEach((card, index) => {
-            gsap.from(card, {
-                scrollTrigger: {
-                    trigger: card,
-                    start: 'top 85%',
-                    toggleActions: 'play none none reverse',
-                },
-                x: index % 2 === 0 ? -80 : 80,
-                y: 40,
-                opacity: 0,
-                duration: 0.8,
-                delay: index * 0.1,
-                ease: 'power3.out',
-            });
-        });
-
-        // Support カード - 修正版（自然な動き）
-        gsap.utils.toArray('.support-card').forEach((card, index) => {
-            gsap.from(card, {
-                scrollTrigger: {
-                    trigger: card,
-                    start: 'top 85%',
-                    toggleActions: 'play none none reverse',
-                },
-                y: 60,
-                opacity: 0,
-                scale: 0.9,
-                duration: 0.7,
-                delay: index * 0.1,
-                ease: 'power2.out',
-            });
-        });
-
-        // ヒーローセクションのパララックス - 強化
-        gsap.to('.hero-background', {
-            scrollTrigger: {
-                trigger: '.hero',
-                start: 'top top',
-                end: 'bottom top',
-                scrub: true,
-            },
-            y: 300,
-            opacity: 0.2,
-            scale: 1.2,
-        });
-
-        // Discord ボタン - 修正版（自然な動き）
-        gsap.from('.discord-button', {
-            scrollTrigger: {
-                trigger: '.discord-button',
-                start: 'top 90%',
-                toggleActions: 'play none none reverse',
-            },
-            scale: 0.8,
-            opacity: 0,
-            y: 40,
-            duration: 0.8,
-            ease: 'back.out(1.5)',
-        });
-    }
-
-    /* ==========================================
-       Live Status データ取得
-       ========================================== */
-    function initLiveStatus() {
-        const serverStatus = document.getElementById('serverStatus');
-        const playerCount = document.getElementById('playerCount');
-        const serverPing = document.getElementById('serverPing');
-
-        if (!serverStatus || !playerCount || !serverPing) return;
-
-        function updateStatus() {
-            const isOnline = Math.random() > 0.1;
-            serverStatus.textContent = isOnline ? 'オンライン' : 'オフライン';
-            serverStatus.style.color = isOnline ? '#4caf50' : '#f44336';
-
-            const currentPlayers = Math.floor(Math.random() * 50) + 10;
-            const countElement = playerCount.querySelector('.count-number');
-            if (countElement) {
-                animateNumber(countElement, parseInt(countElement.textContent) || 0, currentPlayers, 1000);
-            }
-
-            const ping = Math.floor(Math.random() * 50) + 20;
-            const pingElement = serverPing.querySelector('.ping-number');
-            if (pingElement) {
-                animateNumber(pingElement, parseInt(pingElement.textContent) || 0, ping, 1000);
-            }
-        }
-
-        function animateNumber(element, start, end, duration) {
-            const startTime = performance.now();
-            
-            function update(currentTime) {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                
-                const current = Math.floor(start + (end - start) * progress);
-                element.textContent = current;
-                
-                if (progress < 1) {
-                    requestAnimationFrame(update);
-                }
-            }
-            
-            requestAnimationFrame(update);
-        }
-
-        updateStatus();
-        setInterval(updateStatus, 10000);
-    }
-
-    /* ==========================================
-       スムーススクロール
-       ========================================== */
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            
-            if (target) {
-                const offsetTop = target.offsetTop - 80;
-                window.scrollTo({
-                    top: offsetTop,
-                    behavior: 'smooth'
-                });
-            }
-        });
+    gsap.to(taglineChars, {
+      y: (i) => (i % 2 === 0 ? -4 : 4),
+      duration: 3.2,
+      ease: "sine.inOut",
+      stagger: 0.06,
+      yoyo: true,
+      repeat: -1,
+      delay: 1.6
     });
+  }
 
-    /* ==========================================
-       Intersection Observer
-       ========================================== */
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -100px 0px'
-    };
-
-    const fadeObserver = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('fade-in');
-                fadeObserver.unobserve(entry.target);
-            }
-        });
-    }, observerOptions);
-
-    document.querySelectorAll('.section').forEach(section => {
-        fadeObserver.observe(section);
+  /* =========================================================
+    4) 各セクション：穏やかなリビール
+  ========================================================= */
+  if (window.gsap && window.ScrollTrigger) {
+    gsap.utils.toArray(".reveal").forEach((el) => {
+      gsap.fromTo(el,
+        { opacity: 0, y: 16, filter: "blur(2px)" },
+        {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+          duration: 0.9,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: el,
+            start: "top 84%",
+            toggleActions: "play none none reverse"
+          }
+        }
+      );
     });
+  }
+
+  /* =========================================================
+    5) World View：多層パララックス（スクロール＋マウス）
+  ========================================================= */
+  const world = {
+    root: document.getElementById("worldParallax"),
+    layers: {
+      sky: document.querySelector(".world-layer--sky"),
+      clouds: document.querySelector(".world-layer--clouds"),
+      horizon: document.querySelector(".world-layer--horizon"),
+      sea: document.querySelector(".world-layer--sea"),
+      front: document.querySelector(".world-layer--front")
+    }
+  };
+
+  /* =========================================================
+    World View：背景画像パス（ここを差し替えるだけ）
+    重要：
+    - 画像は「横長」推奨（例：1920x1080）
+    - パスはプロジェクト構成に合わせて変更してください
+  ========================================================= */
+  const WORLD_BG_IMAGES = {
+    beach: "img/beach.jpg",
+    city: "img/city.jpg",
+    port: "img/port.jpg",
+    nature: "img/nature.jpg"
+  };
+
+  function applyWorldFrontImage(key) {
+    const front = world.layers.front;
+    if (!front) return;
+
+    const nextUrl = WORLD_BG_IMAGES[key];
+
+    // 未設定（空/undefined）の場合は何もしない
+    if (!nextUrl) return;
+
+    front.classList.add("is-fading");
+
+    window.setTimeout(() => {
+      front.style.setProperty("--world-front-image", `url("${nextUrl}")`);
+      front.classList.remove("is-fading");
+    }, 240);
+  }
+
+  if (world.root) {
+    world.root.addEventListener("mousemove", (e) => {
+      const rect = world.root.getBoundingClientRect();
+      const nx = (e.clientX - rect.left) / rect.width - 0.5;
+      const ny = (e.clientY - rect.top) / rect.height - 0.5;
+
+      world.layers.sky.style.transform = `translate3d(${nx * 8}px, ${ny * 6}px, 0)`;
+      world.layers.clouds.style.transform = `translate3d(${nx * 12}px, ${ny * 10}px, 0)`;
+      world.layers.horizon.style.transform = `translate3d(${nx * 16}px, ${ny * 12}px, 0)`;
+      world.layers.sea.style.transform = `translate3d(${nx * 20}px, ${ny * 14}px, 0)`;
+      world.layers.front.style.transform = `translate3d(${nx * 26}px, ${ny * 18}px, 0)`;
+    }, { passive: true });
+
+    world.root.addEventListener("mouseleave", () => {
+      Object.values(world.layers).forEach((l) => l.style.transform = "translate3d(0,0,0)");
+    }, { passive: true });
+
+    if (window.gsap && window.ScrollTrigger) {
+      gsap.to(world.layers.clouds, {
+        y: 30,
+        ease: "none",
+        scrollTrigger: { trigger: world.root, start: "top bottom", end: "bottom top", scrub: 0.6 }
+      });
+      gsap.to(world.layers.sea, {
+        y: -20,
+        ease: "none",
+        scrollTrigger: { trigger: world.root, start: "top bottom", end: "bottom top", scrub: 0.6 }
+      });
+    }
+  }
+
+  const worldPanelTitle = document.getElementById("worldTitle");
+  const worldPanelText = document.getElementById("worldText");
+  const chips = document.querySelectorAll(".world-chip");
+
+  const worldCopy = {
+    beach: {
+      title: "海岸",
+      text: "白い砂と透明感のある海。到着して最初に深呼吸したくなる場所です。",
+      tint: "rgba(127,215,255,.22)"
+    },
+    city: {
+      title: "市街地",
+      text: "人が集まり、会話が生まれる。買い物や用事が生活のテンポになります。",
+      tint: "rgba(255,255,255,.18)"
+    },
+    port: {
+      title: "港",
+      text: "漁、運送、出入りする車両。働く景色が街の生活感を支えます。",
+      tint: "rgba(79,195,247,.18)"
+    },
+    nature: {
+      title: "自然エリア",
+      text: "少し遠回りしたくなる道。静けさと緑が、呼吸を整えてくれます。",
+      tint: "rgba(120,255,220,.10)"
+    }
+  };
+
+  chips.forEach((chip) => {
+    chip.addEventListener("click", () => {
+      const key = chip.dataset.world || "beach";
+      const data = worldCopy[key] || worldCopy.beach;
+
+      if (worldPanelTitle) worldPanelTitle.textContent = data.title;
+      if (worldPanelText) worldPanelText.textContent = data.text;
+
+      const panel = document.getElementById("worldPanel");
+      if (panel) {
+        panel.style.boxShadow = "0 18px 60px rgba(0,40,70,.16)";
+        panel.style.background = `linear-gradient(135deg, rgba(255,255,255,.62), ${data.tint})`;
+      }
+
+      applyWorldFrontImage(key);
+
+      const rect = chip.getBoundingClientRect();
+      addRipple(rect.left + rect.width * 0.5, rect.top + rect.height * 0.5, 0.9);
+    });
+  });
+
+  // 初期表示：海岸
+  applyWorldFrontImage("beach");
+
+  /* =========================================================
+    6) Jobs Detail：カードのリップル座標をCSS変数へ反映
+  ========================================================= */
+  const jobCards = document.querySelectorAll(".job-card");
+  jobCards.forEach((card) => {
+    card.addEventListener("mousemove", (e) => {
+      const rect = card.getBoundingClientRect();
+      const rx = ((e.clientX - rect.left) / rect.width) * 100;
+      const ry = ((e.clientY - rect.top) / rect.height) * 100;
+      card.style.setProperty("--rx", rx + "%");
+      card.style.setProperty("--ry", ry + "%");
+    }, { passive: true });
+
+    card.addEventListener("mouseenter", () => {
+      const rect = card.getBoundingClientRect();
+      addRipple(rect.left + rect.width * 0.5, rect.top + rect.height * 0.6, 0.8);
+    }, { passive: true });
+  });
+
+  /* =========================================================
+    7) Jobs Overview：常時微浮遊アニメーション（穏やか）
+  ========================================================= */
+  const floatCards = document.querySelectorAll(".float-card");
+  if (window.gsap && floatCards.length) {
+    floatCards.forEach((card, i) => {
+      gsap.to(card, {
+        y: (i % 2 === 0) ? -6 : 6,
+        duration: 3.6 + (i * 0.2),
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: -1
+      });
+    });
+  }
+
+  /* =========================================================
+    8) A Day：画像のみを時間経過で切替（フェード）
+    - HTMLの朝/昼/夜分岐や ScrollTrigger の onUpdate 切替は使わない
+    - dayStage が画面内にある時だけ回す（省エネ）
+  ========================================================= */
+  const dayStage = document.getElementById("dayStage");
+  const dayTime = document.getElementById("dayTime");
+  const dayTitle = document.getElementById("dayTitle");
+  const dayText = document.getElementById("dayText");
+  const dayDots = document.querySelectorAll(".day-dot");
+
+  /* =========================================================
+    A Day：画像パス（ここを差し替えるだけ）
+    重要：
+    - 画像は「横長」推奨（例：1920x1080）
+    - パスはプロジェクト構成に合わせて変更してください
+  ========================================================= */
+  const DAY_SLIDES = [
+    "img/night.jpg",
+    "img/day.jpg",
+    "img/morning.jpg"
+  ];
+
+  const DAY_SLIDE_INTERVAL = 4500;
+
+  const dayCopy = [
+    {
+      time: "朝",
+      title: "港に光が落ちる",
+      text: "仕事の準備、挨拶、出航。静かな始まりが街のテンポを作ります。"
+    },
+    {
+      time: "昼",
+      title: "市街地が賑わう",
+      text: "買い物、移動、用事。生活が回り、会話が自然に生まれます。"
+    },
+    {
+      time: "夜",
+      title: "海の音が近くなる",
+      text: "落ち着いた時間。今日の出来事が物語になって、街に積もっていきます。"
+    }
+  ];
+
+  let dayTimer = null;
+  let dayIndex = 0;
+
+  function setupDaySlides() {
+    if (!dayStage) return;
+
+    // 既に生成済みなら何もしない
+    if (dayStage.querySelector(".day-slide")) return;
+
+    const valid = DAY_SLIDES.filter((u) => !!u);
+    if (valid.length === 0) return;
+
+    valid.forEach((url, i) => {
+      const slide = document.createElement("div");
+      slide.className = "day-slide" + (i === 0 ? " is-active" : "");
+      slide.style.backgroundImage = `url("${url}")`;
+      dayStage.insertBefore(slide, dayStage.firstChild);
+    });
+  }
+
+  function applyDayUI(idx) {
+    const d = dayCopy[idx] || dayCopy[0];
+    if (dayTime) dayTime.textContent = d.time;
+    if (dayTitle) dayTitle.textContent = d.title;
+    if (dayText) dayText.textContent = d.text;
+    dayDots.forEach((dot, i) => dot.classList.toggle("is-active", i === idx));
+  }
+
+  function setActiveDaySlide(idx) {
+    if (!dayStage) return;
+    const slides = dayStage.querySelectorAll(".day-slide");
+    if (!slides.length) return;
+
+    slides.forEach((s) => s.classList.remove("is-active"));
+    slides[idx % slides.length].classList.add("is-active");
+
+    applyDayUI(idx);
+
+    // ほんのり波紋（控えめ）
+    const rect = dayStage.getBoundingClientRect();
+    addRipple(rect.left + rect.width * 0.5, rect.top + rect.height * 0.55, 0.9);
+  }
+
+  function startDaySlideshow() {
+    if (!dayStage) return;
+
+    setupDaySlides();
+
+    const slides = dayStage.querySelectorAll(".day-slide");
+    if (!slides.length) return;
+
+    stopDaySlideshow();
+
+    // 初期UI反映
+    setActiveDaySlide(dayIndex);
+
+    dayTimer = window.setInterval(() => {
+      dayIndex = (dayIndex + 1) % slides.length;
+      setActiveDaySlide(dayIndex);
+    }, DAY_SLIDE_INTERVAL);
+  }
+
+  function stopDaySlideshow() {
+    if (dayTimer) {
+      window.clearInterval(dayTimer);
+      dayTimer = null;
+    }
+  }
+
+  // dayStage があれば、画面内にいる時だけ回す（ScrollTriggerが使える場合）
+  if (dayStage && window.ScrollTrigger) {
+    ScrollTrigger.create({
+      trigger: dayStage,
+      start: "top 75%",
+      end: "bottom 25%",
+      onEnter: () => startDaySlideshow(),
+      onEnterBack: () => startDaySlideshow(),
+      onLeave: () => stopDaySlideshow(),
+      onLeaveBack: () => stopDaySlideshow()
+    });
+  } else {
+    // ScrollTriggerが無い場合でも最低限動くように（常時）
+    startDaySlideshow();
+  }
+
+  /* =========================================================
+    9) スムーススクロール補助（強制しない）
+  ========================================================= */
+  document.querySelectorAll('a[href^="#"]').forEach((a) => {
+    a.addEventListener("click", (e) => {
+      const id = a.getAttribute("href");
+      if (!id || id === "#") return;
+
+      const el = document.querySelector(id);
+      if (!el) return;
+
+      e.preventDefault();
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      addRipple(ocean.w * 0.5, 120, 0.6);
+    });
+  });
 
 })();
