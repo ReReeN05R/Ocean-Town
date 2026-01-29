@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0e2a3b" />
+  <title>Ocean Town 基本ルール</title>
+
+  <!-- 日本語フォント（読みやすさ最優先・軽量運用） -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Shippori+Mincho:wght@600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <!-- 読書支援：スクロール進捗（細いバー） -->
+  <div class="scroll-progress" aria-hidden="true">
+    <div class="scroll-progress__bar" id="scrollProgressBar"></div>
+  </div>
+
+  <!-- ページ全体：初回のみ穏やかにフェードイン -->
+  <div class="page" data-page-fade id="pageRoot">
+    <!-- =========================================================
+      Header（シンプル・静的）
+      - タイトル「Ocean Town 基本ルール」
+      - 小さなサブタイトル（落ち着いた案内）
+    ========================================================== -->
+    <header class="header" role="banner">
+      <div class="container header__inner">
+        <div class="header__titleblock">
+          <p class="header__kicker">Ocean Town 六法</p>
+          <h1 class="header__title">Ocean Town 基本ルール</h1>
+          <p class="header__subtitle">静かな街で、安心して暮らすための約束事</p>
+        </div>
+
+        <nav class="header__nav" aria-label="ページ内ナビゲーション">
+          <a class="header__link" href="#intro">はじめに</a>
+          <a class="header__link" href="#rules">ルール本文</a>
+          <a class="header__link" href="#footer">戻る</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="main" role="main">
+      <!-- =========================================================
+        Intro（短い導入）
+        - 文章は短く
+        - フェードインはページロード時のみ（本文自体はアニメしない）
+      ========================================================== -->
+      <section class="section" id="intro" aria-labelledby="introTitle">
+        <div class="container">
+          <div class="card card--intro">
+            <h2 class="section__title" id="introTitle" data-reveal-title>はじめに</h2>
+            <p class="lead">
+              ここに記載されている内容は、Ocean Townでロールプレイを行う上での「法」と「基盤」です。
+              すべての住民が同じ前提を共有することで、トラブルを減らし、安心して日常を積み重ねられます。
+            </p>
+            <p class="note">
+              ※本ページは「見せる」ためのページではなく、「読む」ためのページです。落ち着いて確認してください。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================
+        Rule Content（最重要）
+        - ルール本文は改変せず、そのまま
+        - 長文前提のレイアウト（行間・余白・視線誘導）
+        - サイドナビ：現在地ハイライト（任意機能）
+      ========================================================== -->
+      <section class="section section--rules" id="rules" aria-labelledby="rulesTitle">
+        <div class="container layout">
+          <!-- サイドナビ（任意：現在セクションをハイライト） -->
+          <aside class="sidenav" aria-label="章ナビゲーション">
+            <div class="sidenav__box">
+              <p class="sidenav__title">目次</p>
+              <ol class="sidenav__list">
+                <li><a class="sidenav__link" href="#rulesTitle">基本ルール</a></li>
+                <li><a class="sidenav__link" href="#block-zentei">前提</a></li>
+                <li><a class="sidenav__link" href="#block-shimin">市民の基準</a></li>
+                <li><a class="sidenav__link" href="#block-job">JOBについて</a></li>
+                <li><a class="sidenav__link" href="#block-character">キャラクター作成ルール</a></li>
+                <li><a class="sidenav__link" href="#block-murder">プレイヤー殺人及び未遂の基準</a></li>
+                <li><a class="sidenav__link" href="#block-crutch">松葉杖のルール</a></li>
+                <li><a class="sidenav__link" href="#block-safezone">セーフゾーン</a></li>
+                <li><a class="sidenav__link" href="#block-gunlicense">ガンライセンスについて</a></li>
+                <li><a class="sidenav__link" href="#block-joinname">Join Nameについて</a></li>
+                <li><a class="sidenav__link" href="#block-kinshi">禁止事項</a></li>
+                <li><a class="sidenav__link" href="#block-others">◎その他</a></li>
+              </ol>
+            </div>
+          </aside>
+
+          <!-- 本文 -->
+          <article class="doc" aria-label="ルール本文">
+            <header class="doc__head">
+              <h2 class="section__title" id="rulesTitle" data-reveal-title>ルール本文（改変なし）</h2>
+              <p class="doc__meta">
+                読みやすさのために段落・余白は整えていますが、文言は提供内容をそのまま掲載しています。
+              </p>
+            </header>
+
+            <!-- ルール本文：改変禁止のため pre を使用（視認性のためCSSで整形） -->
+            <section class="rule-block" id="block-zentei" aria-labelledby="zenteiTitle">
+              <h3 class="rule-block__title" id="zenteiTitle" data-reveal-title>前提</h3>
+              <pre class="rule-text" aria-label="前提（ルール本文）">――――――――――
+基本ルール
+前提
+・ルールは運営が六法でアナウンスをしない限り変更はありません。
+　たとえ住民から変更の噂を聞いてもアナウンスがない限りは適応されていません。
+　必ずルールに則ってください。
+
+・街で出会った方は原則街の中の住民です。
+　当人の許可なく個人情報を特定することやSNS等でDM等を送る行為は禁止です。
+　必ず当人の許可を取ってから行うようにしてください。
+　※RP内外問わず
+
+・街で生活する住人は、まるで本当にその世界で生きているかのように振る舞います。
+　これを「ロールプレイ（RP）」と呼びます。RPを行う際は、「自分のキャラクターが今後ど　のような生活を送り、どんな影響を周囲に与えていくのか」を考え、すべてのプレイヤーが　　RPをしていることを前提に行動してください。なお、当サーバーは過度に厳しいRPを求める　必要はしていません。また、一度BANされた方が再び街に参加していることが確認された場　合は、警告なしで即時BAN対応を行いますので、ご注意ください。
+
+・トラブル回避の為、録画を推奨しています
+
+・アイテムが消失してしまった際に、録画がある場合は補填が可能です。
+
+・本サーバーの公用語は日本語です。円滑なコミュニケーションのため、
+　日本語での会話が難しい方のご参加はご遠慮いただいております。
+　(The official language of this server is Japanese. For the sake of smooth 　
+　communication, we ask that those who have difficulty conversing in Japanese refrain from 　participating.)
+
+・街で生活する住人は自分の行動に責任を持ち、相手を尊重するようにしてください。
+
+・運営への虚偽の報告等自分を有利にする発言はおやめください。
+　公平な判断の疎外となりますので運営預かりになった時点でRPは止めて
+　正確な報告をお願いいたします。
+
+・ルールの穴をつく行為は禁止とします。
+　ルールに記載されていないからと言って何をしてもいいというわけではありません。
+　グレーゾーンはしないで下さい、ルールが制定されるまではしないでください。
+
+・街の経済状況やルールは街の発展に応じて、変更または更新される場合があります。
+
+・街の中で問題が発生したらRPで解決できる場合は必ずRPで対処すること
+　RPで対処できない状況の場合、運営スタッフに連絡するようにしてください。</pre>
+            </section>
+
+            <section class="rule-block" id="block-shimin" aria-labelledby="shiminTitle">
+              <h3 class="rule-block__title" id="shiminTitle" data-reveal-title>市民の基準</h3>
+              <pre class="rule-text" aria-label="市民の基準（ルール本文）">市民の基準
+　白市民
+・２週間以上犯罪歴がない市民
+　グレー市民
+・ギャングに所属していないが、２週間以内に犯罪を行った市民
+　黒市民
+・ギャングに所属している市民</pre>
+            </section>
+
+            <section class="rule-block" id="block-job" aria-labelledby="jobTitle">
+              <h3 class="rule-block__title" id="jobTitle" data-reveal-title>JOBについて</h3>
+              <pre class="rule-text" aria-label="JOBについて（ルール本文）">JOBについて
+　PD EMS メカニックのJobは公務員扱いとします
+　白市民は2つまで取得できます。
+　黒市民、グレー市民は公務員とディーラー以外のJobを2つまで取得できます。
+　※ギャングは1つのJobとしてカウントします
+　※初心者案内Jobはカウントされません
+　※メカニックとディーラーの兼業は禁止
+　※市役所で獲得できるJobはカウントされません </pre>
+            </section>
+
+            <section class="rule-block" id="block-character" aria-labelledby="characterTitle">
+              <h3 class="rule-block__title" id="characterTitle" data-reveal-title>キャラクター作成ルール</h3>
+              <pre class="rule-text" aria-label="キャラクター作成ルール（ルール本文）">キャラクター作成ルール
+・キャラクターは1人だけ作成できます。
+※パトロンTier6で2キャラ目を解放できます。	
+・モラルに欠けた名前、特殊文字の使用は禁止
+・透明部分のある衣服や裸、過度な露出は禁止
+・キャラクター作成時のキャラクターにあるモデルの変更禁止
+・体の一部を消す行為は禁止 
+　モデルの変更が確認された時点で警告を致します
+　モデル名は男性mp_m_freemode_01
+　　　　　　女性mp_f_freemode_01</pre>
+            </section>
+
+            <section class="rule-block" id="block-murder" aria-labelledby="murderTitle">
+              <h3 class="rule-block__title" id="murderTitle" data-reveal-title>プレイヤー殺人及び未遂の基準</h3>
+              <pre class="rule-text" aria-label="プレイヤー殺人及び未遂の基準（ルール本文）">プレイヤー殺人及び未遂の基準
+　プレイヤー殺人の判定
+　プレイヤーが殺害された場合
+　未遂の場合
+　プレイヤーや車両に対し銃を向けたり発砲、車両を使ってプレイヤーに対してアタックをする　行為、人質がいない状態でのPD車両へのアタック行為</pre>
+            </section>
+
+            <section class="rule-block" id="block-crutch" aria-labelledby="crutchTitle">
+              <h3 class="rule-block__title" id="crutchTitle" data-reveal-title>松葉杖のルール</h3>
+              <pre class="rule-text" aria-label="松葉杖のルール（ルール本文）">松葉杖のルール
+・松葉杖をついている状態での車両の運転行為は禁止
+
+・松葉杖はダウン時から起きた際に一律２分
+
+・PDの事件対応時のダウンのみ松葉杖の着用はなし</pre>
+            </section>
+
+            <section class="rule-block" id="block-safezone" aria-labelledby="safezoneTitle">
+              <h3 class="rule-block__title" id="safezoneTitle" data-reveal-title>セーフゾーン</h3>
+              <pre class="rule-text" aria-label="セーフゾーン（ルール本文）">セーフゾーン（メカニック敷地内・レギオン駐車場・病院前・警察署敷地に接する道路から内側にかけて）
+
+　セーフゾーン内では全ての犯罪行為、荒らし行為が禁止です。
+　煽り行為やプレイヤーへの迷惑になる行為も全て禁止です。
+
+・犯罪シーン中にセーフゾーンへ逃げ込む行為は絶対に禁止です。
+　通過するためにセーフゾーンに入る行為は可能です
+
+　セーフゾーン内で上記の内容のルールに反した場合、運営からの処罰を受けます　</pre>
+            </section>
+
+            <section class="rule-block" id="block-gunlicense" aria-labelledby="gunlicenseTitle">
+              <h3 class="rule-block__title" id="gunlicenseTitle" data-reveal-title>ガンライセンスについて</h3>
+              <pre class="rule-text" aria-label="ガンライセンスについて（ルール本文）">ガンライセンスについて
+　ガンライセンスを発行するには
+　街に起きてから３日以上経っている白市民のみ発行ができます。
+
+　発行での値段100万円
+
+※ライセンスは必ずインベントリにて所持をしておくこと
+　ライセンス未所持にて罰金を課される場合がある
+
+ライセンス未所持の判定
+　ライセンスを所持している状態で、アサルトライフルなどのピストルやナイフ以外の危険なも　のを所持している場合、ライセンスを持っていない状態でピストルなどの武器を所持している　場合。
+
+ライセンスでの所持可能武器
+　ピストル、ナイフなど</pre>
+            </section>
+
+            <section class="rule-block" id="block-joinname" aria-labelledby="joinnameTitle">
+              <h3 class="rule-block__title" id="joinnameTitle" data-reveal-title>Join Nameについて</h3>
+              <pre class="rule-text" aria-label="Join Nameについて（ルール本文）">Join Nameについて
+　・街に参加する際のJoin Nameの色を変更した場合、末尾に^2 (Light Green)を入れること</pre>
+            </section>
+
+            <section class="rule-block" id="block-kinshi" aria-labelledby="kinshiTitle">
+              <h3 class="rule-block__title" id="kinshiTitle" data-reveal-title>禁止事項</h3>
+              <pre class="rule-text" aria-label="禁止事項（ルール本文）">禁止事項
+・グリッチ・チート・外部ツールの使用
+　有利にするツール、クロスヘアを常時表示するなど
+　※マクロ、CrosshairXなども対象としています
+
+・車両について
+　シーン中に乗り物を修理する行為
+　シーン中に車両をガレージから出す行為
+　シーン中に車両をガレージに仕舞う行為
+
+・RMT（リアルマネートレード）
+　現実の通貨とゲーム内のアイテムの交換・アイテムを現実の通貨で売る行為
+※Ocean Town内でリアルマネーを使用したイベント行為も禁止
+
+・Combat log（コンバットログ）
+　シーン途中で意図的にサーバーから退出する行為
+
+・OOC(out of character)行為
+　実際のキャラクターではなく、相手を脅したり相手を不快にしたりする発言の禁止
+　運営、BAN、クリップなどの発言
+
+・RDM（ランダムデスマッチ）
+　無差別にキャラクターを殺害する行為
+    RPの場合は可能
+
+・VDM（ビークルデスマッチ）
+　無差別や無意味に車両を使って人を殺害、負傷されたりする行為　
+　RPの場合は可能
+
+・エモートの悪用
+　シーン途中で、自分を有利にするエモートや相手を不利にさせるエモートの使用
+
+・車両の窃盗行為
+　ADMIN車両・ネタ車両・VIP車両・EMS車両・PD車両・他人の車両・JOB車両
+※心無きの車両は窃盗可能
+
+・スライディングしながら発砲する行為
+　
+・Power Gaming（パワーゲーミング）
+　非現実的な行為の禁止
+※Power Gaming例
+　ダウン時のラジオの使用、電話
+　スケボーを利用し高い所から飛び降りる
+　スライディングしながら発砲する
+　手錠をかけられた状態でのラジオの使用など
+
+・Meta Gaming（メタゲーミング）
+　キャラクター外で得た情報をゲーム内で発言、使用、利用の禁止
+※Meta Gaming例
+　配信サイト、Discordなどで得た情報
+　ゴースティング行為
+　外部サイトから得た情報
+　ゲーム外VCの使用
+
+・全体チャットの使用
+　緊急時のみ使用可能
+
+・シーン中に生きてる人に対してキャリーをする行為
+
+・キャンプ行為
+　麻薬取り締まりのみ可能
+
+・EMSはイベント等特別な犯罪以外ではシーンが終了するまでの間、シーンを抜けていないプ　レイヤーに関与する行為
+
+・ROB行為
+　他人の物（車両、アイテム、金銭）を盗む行為
+※車両のトランク、ダッシュボードからのROB行為は一律禁止
+　ギャングのみ可能　ROB可能アイテム
+
+・各職業のなりすまし
+　PDの服やEMSの服に似た服の使用も禁止
+
+・ドライブバイ行為
+　ボートの上から射撃は可能
+
+・ゾンビアタック行為
+　病院や現場で蘇生された際にシーンに戻る行為
+
+
+・緊急時以外での本署前スポーンの使用
+　バグや裏世界などに飛ばされてしまった場合は使用可能
+
+・シーン中にロードのある場所への逃走、使用
+　リサセンやカジノ、ガレージの中に入る行為の禁止
+
+・シーン中に名前を非表示にする行為
+　及びキャラクターネーム以外の名前に変更する行為
+
+・運営から認められたアカウント以外でのTwiXでの犯罪関係の発言
+　人質、メンバーの募集など
+
+・公務員以外は小数点を含む1~10番の無線の使用を禁止
+　
+・不適切なJoinName使用する行為
+
+・不適切なキャラクターネームを使用する行為
+※運営の判断次第によっては名前を変更していただく場合があります
+
+・防弾ヘルメットの着用行為
+　着用が確認された場合、運営から警告を致します
+
+・Admin車両に対しての発砲行為
+　確認された場合、即Banとします
+
+・運営が所持しているアイテムの窃盗行為
+
+・シーン中にグリッチロールやスピブの行為
+
+・過度なRPまたは人が不快になるようなRPの行為
+
+・RPを超えた発言行為
+　脅迫や暴言、セクハラなど
+
+・RPを放棄する行為
+
+・魂への貫通行為
+
+・過度な貫通行為
+
+・PETの殺害行為
+
+・シーン中に死んでいる人間以外を担架に乗せる行為
+　個人医、警察の担架が出せるものを対象
+
+・組織の犯罪者が公務員をギャングなどへ勧誘する行為
+
+・犯罪シーン中に歩き方を変更する行為
+
+・グリッチを故意に使用する行為の禁止
+
+・空気読みをしない行為
+
+・体の一部分が透明になっている状態でシーンや犯罪行為の禁止
+　銃撃戦で有利になってしまう為
+
+・死亡してからラジオ内の名前を変更して情報共有をする行為の禁止
+（例）2000番台に敵〇人いる など
+
+・勧誘行為（他の街への勧誘など）
+　全てのOcean Town六法関係の六法またはゲーム内での勧誘行為が見受けられた場合
+　相当な処罰を受ける場合があります
+
+
+・ヘリにニトロを搭載する行為
+　歪みを誘発し、街に負担をかける為
+
+・斜めになっている壁に張り付いた状態で、ADSをして発砲をする行為
+　　
+　客船の扉など
+※グリッチ行為としてみなします
+
+・以下に記載されているRP行為の禁止
+　障害者、暴言厨、セクハラ、不適切な立ち振る舞い、差別主義者、不快なRP、荒らしなど
+※相手が不快に思うような行動は全て禁止されています。
+　RPだからといって何してもいいわけではありません、お気を付けください。
+
+・RPを強要するような行為
+
+・1キャラ目で2キャラ目に関する話をする行為
+※キャラが反対も同様のルールを適応とする
+　2キャラ目のJOBの事を1キャラ目で話したり、2キャラ目で1キャラ目の発言をする
+
+
+・公務員による犯罪行為
+　薬物精製、薬物採取、全ての犯罪行為を禁止
+
+・TwiXでの特定の人物へ煽る行為や不適切な言動は禁止
+
+・犯罪実行中にTwiXをログアウト、アカウントを作成していない状態は禁止
+
+・ペイントボール中の犯罪行為、ガレージから車両を出す行為
+
+・TwiXで運営を呼ぶ行為の禁止
+　ステートに記載されていない場合、運営対応は不可能
+　
+　運営がいない場合はチケットを発行してください。
+　ステートの運営から必ず運営対応は申し出るようにしてください。
+
+・ペイントボールで禁止されているマップの使用行為　
+　Uptown Construction Grandmas House
+
+・無線をした状態での発砲行為
+※無線撃ち 
+
+・Ocean Town内の出来事を夢(現実)に貫通させて他人を不快にする行為
+※街で住民と喧嘩をしその出来事をSNSなどに書く行為など
+（この行為を確認したらチケットを作成して教えて下さい）
+　
+・外部のVCに参加した状態で街に参加または街で生活する行為
+※いかなる理由であってもVCに参加している状態で街には参加しないでください
+　街の人以外と通話している場合も対象とします。
+
+•JOB車両のJOB以外での使用行為
+
+・街に参加している状態で衛星主の許可なしに衛星を見る行為
+※衛星主からの申告のみ対応します。
+対応しない例)
+○○さんが○○さんの衛星を街にいるのに見ています。
+
+1人称視点の視野角を変更する行為</pre>
+            </section>
+
+            <section class="rule-block" id="block-others" aria-labelledby="othersTitle">
+              <h3 class="rule-block__title" id="othersTitle" data-reveal-title>◎その他</h3>
+              <pre class="rule-text" aria-label="その他（ルール本文）">◎その他
+・車両に乗った状態でエスコートをする行為は可能
+
+・ダウン時に無線をピコピコする行為は可能
+
+・車両の中でのROB行為は禁止とする（ギャングルールに詳しく記載されています）
+
+
+――――――――――</pre>
+            </section>
+
+            <!-- 読み終わりの静かな余韻 -->
+            <div class="doc__end">
+              <p class="endnote">
+                以上が基本ルールです。安心して暮らすために、互いを尊重し、落ち着いて遵守してください。
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <!-- =========================================================
+      Footer（最小）
+    ========================================================== -->
+    <footer class="footer" id="footer" role="contentinfo">
+      <div class="container footer__inner">
+        <p class="footer__text">Ocean Town｜六法・基本ルール</p>
+        <div class="footer__actions">
+          <a class="footer__link" href="../index.html">公式ポータルへ戻る</a>
+          <a class="footer__link" href="#top">ページ上部へ</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

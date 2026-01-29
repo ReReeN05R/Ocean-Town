@@ -1,0 +1,403 @@
+/* =========================================================
+  Ocean Town ルール文書ページ（実運用前提）
+  目的：可読性・明確さ・信頼
+  方針：静的・余白・最小限の動き（読書支援のみ）
+  注意：コメントは日本語で統一
+========================================================= */
+
+:root{
+  /* 背景は「市役所の白」＋海の気配を少し */
+  --bg: #f7fbff;
+  --paper: rgba(255,255,255,.92);
+  --paper-2: rgba(255,255,255,.84);
+
+  /* 文字 */
+  --text: #0b2233;
+  --muted: rgba(11,34,51,.72);
+
+  /* 海のアクセント（強すぎない） */
+  --sea-1: #0e5a7a;
+  --sea-2: #0aa0c6;
+  --line: rgba(14,90,122,.16);
+
+  /* UI */
+  --shadow: 0 18px 50px rgba(0,40,70,.08);
+  --shadow-soft: 0 10px 30px rgba(0,40,70,.06);
+  --radius: 18px;
+
+  --font-sans: "Zen Kaku Gothic New", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Shippori Mincho", serif;
+
+  --ease: cubic-bezier(.2,.8,.2,1);
+}
+
+*{ box-sizing: border-box; }
+html, body{ height: 100%; }
+
+body{
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* =========================================================
+  読書支援：スクロール進捗バー
+========================================================= */
+.scroll-progress{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: rgba(14,90,122,.08);
+  z-index: 100;
+}
+.scroll-progress__bar{
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, rgba(14,90,122,.55), rgba(10,160,198,.65));
+  transform: translateZ(0);
+}
+
+/* =========================================================
+  ページ：初回フェードイン（1回のみ）
+========================================================= */
+.page{
+  min-height: 100%;
+}
+
+[data-page-fade]{
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity .45s var(--ease), transform .45s var(--ease);
+}
+[data-page-fade].is-ready{
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* =========================================================
+  レイアウト
+========================================================= */
+.container{
+  width: min(1120px, calc(100% - 40px));
+  margin: 0 auto;
+}
+
+.main{
+  padding: 24px 0 64px;
+}
+
+.section{
+  padding: 28px 0;
+}
+
+.layout{
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+/* モバイル：サイドナビを上へ */
+@media (max-width: 980px){
+  .layout{
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+  Header（静か・信頼）
+========================================================= */
+.header{
+  border-bottom: 1px solid var(--line);
+  background:
+    radial-gradient(900px 420px at 15% 0%, rgba(10,160,198,.08), transparent 60%),
+    linear-gradient(to bottom, rgba(255,255,255,.86), rgba(255,255,255,.62));
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 3px; /* 進捗バー分 */
+  z-index: 50;
+}
+
+.header__inner{
+  padding: 18px 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.header__kicker{
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: .14em;
+  color: rgba(14,90,122,.9);
+  font-weight: 700;
+}
+
+.header__title{
+  margin: 8px 0 6px;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: .02em;
+  font-size: clamp(22px, 2.6vw, 30px);
+  line-height: 1.25;
+}
+
+.header__subtitle{
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.header__nav{
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.header__link{
+  text-decoration: none;
+  color: rgba(14,90,122,.92);
+  font-weight: 700;
+  font-size: 12px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(14,90,122,.16);
+  background: rgba(255,255,255,.75);
+  transition: background .18s var(--ease), border-color .18s var(--ease);
+}
+.header__link:hover{
+  background: rgba(10,160,198,.08);
+  border-color: rgba(10,160,198,.22);
+}
+
+/* =========================================================
+  カード（導入）
+========================================================= */
+.card{
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  box-shadow: var(--shadow-soft);
+  padding: 18px 18px;
+}
+
+.card--intro .lead{
+  margin: 10px 0 0;
+  font-size: 14px;
+  line-height: 1.95;
+  color: rgba(11,34,51,.84);
+}
+
+.note{
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.85;
+  color: var(--muted);
+}
+
+/* =========================================================
+  見出し：ごく軽い出現（本文はアニメしない）
+========================================================= */
+.section__title{
+  margin: 0;
+  font-size: 18px;
+  letter-spacing: .04em;
+  line-height: 1.35;
+}
+
+[data-reveal-title]{
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity .38s var(--ease), transform .38s var(--ease);
+}
+[data-reveal-title].is-visible{
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* =========================================================
+  サイドナビ（読書支援）
+========================================================= */
+.sidenav{
+  position: sticky;
+  top: 92px; /* header高さに合わせる */
+}
+
+.sidenav__box{
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-2);
+  box-shadow: var(--shadow-soft);
+  padding: 14px 14px;
+}
+
+.sidenav__title{
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  color: rgba(14,90,122,.9);
+}
+
+.sidenav__list{
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+}
+
+.sidenav__link{
+  color: rgba(11,34,51,.86);
+  text-decoration: none;
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 3px 6px;
+  border-radius: 10px;
+  transition: background .15s var(--ease);
+}
+.sidenav__link:hover{
+  background: rgba(10,160,198,.08);
+}
+.sidenav__link.is-active{
+  background: rgba(10,160,198,.12);
+  outline: 1px solid rgba(10,160,198,.22);
+}
+
+/* モバイル：sticky解除（読みやすさ優先） */
+@media (max-width: 980px){
+  .sidenav{ position: relative; top: auto; }
+}
+
+/* =========================================================
+  本文（ドキュメント）
+========================================================= */
+.doc{
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  box-shadow: var(--shadow);
+  padding: 18px 18px;
+}
+
+.doc__head{
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(14,90,122,.12);
+  margin-bottom: 14px;
+}
+
+.doc__meta{
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+
+/* ルールブロック */
+.rule-block{
+  padding: 14px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(14,90,122,.12);
+  background: rgba(255,255,255,.72);
+  box-shadow: 0 0 0 rgba(0,0,0,0);
+  transition: background .18s var(--ease), border-color .18s var(--ease);
+  margin: 14px 0;
+}
+
+/* ホバーは「読む支援」程度に */
+.rule-block:hover{
+  background: rgba(10,160,198,.06);
+  border-color: rgba(10,160,198,.18);
+}
+
+.rule-block__title{
+  margin: 0 0 10px;
+  font-size: 15px;
+  letter-spacing: .04em;
+  color: rgba(14,90,122,.92);
+}
+
+/* ルール本文：改変禁止なので pre を採用し、見た目だけ整える */
+.rule-text{
+  margin: 0;
+  padding: 0;
+  white-space: pre-wrap;   /* 折り返し */
+  word-break: break-word;  /* 長い語も折り返し */
+  font-size: 13px;
+  line-height: 1.95;
+  color: rgba(11,34,51,.90);
+  font-family: var(--font-sans);
+}
+
+/* 読了の余韻 */
+.doc__end{
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(14,90,122,.12);
+}
+
+.endnote{
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.9;
+  color: rgba(11,34,51,.84);
+}
+
+/* =========================================================
+  Footer（最小）
+========================================================= */
+.footer{
+  border-top: 1px solid var(--line);
+  background: rgba(255,255,255,.70);
+}
+
+.footer__inner{
+  padding: 18px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.footer__text{
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.footer__actions{
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.footer__link{
+  text-decoration: none;
+  color: rgba(14,90,122,.92);
+  font-weight: 700;
+  font-size: 12px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(14,90,122,.16);
+  background: rgba(255,255,255,.78);
+}
+.footer__link:hover{
+  background: rgba(10,160,198,.08);
+}
+
+/* =========================================================
+  アクセシビリティ：動きが苦手な方へ
+========================================================= */
+@media (prefers-reduced-motion: reduce){
+  *{
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

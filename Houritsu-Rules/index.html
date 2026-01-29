@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0e2a3b" />
+  <title>Ocean Town｜法律ルール</title>
+
+  <!-- 日本語フォント（読みやすさ最優先・軽量運用） -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Shippori+Mincho:wght@600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <!-- 読書支援：スクロール進捗（細いバー） -->
+  <div class="scroll-progress" aria-hidden="true">
+    <div class="scroll-progress__bar" id="scrollProgressBar"></div>
+  </div>
+
+  <!-- ページ全体：初回のみ穏やかにフェードイン -->
+  <div class="page" data-page-fade id="pageRoot">
+    <!-- =========================================================
+      Header（シンプル・静的）
+      - タイトル「Ocean Town｜法律ルール」
+      - サブテキスト
+      - 読書を邪魔しないテーマ切替
+    ========================================================== -->
+    <header class="header" role="banner">
+      <div class="container header__inner">
+        <div class="header__titleblock">
+          <p class="header__kicker">Ocean Town 六法</p>
+          <h1 class="header__title">Ocean Town｜法律ルール</h1>
+          <p class="header__subtitle">街の秩序と公平なRPのために</p>
+        </div>
+
+        <div class="header__right">
+          <nav class="header__nav" aria-label="ページ内ナビゲーション">
+            <a class="header__link" href="#intro">はじめに</a>
+            <a class="header__link" href="#crime-table">犯罪区分（表）</a>
+            <a class="header__link" href="#text-rules">本文</a>
+            <a class="header__link" href="#footer">戻る</a>
+          </nav>
+
+          <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="表示テーマを切り替える"
+            aria-pressed="false"
+            title="表示テーマを切り替える"
+          >
+            <span class="theme-toggle__icon" aria-hidden="true"></span>
+            <span class="theme-toggle__label">テーマ</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="main" role="main">
+      <!-- =========================================================
+        Intro
+      ========================================================== -->
+      <section class="section" id="intro" aria-labelledby="introTitle">
+        <div class="container">
+          <div class="card card--intro">
+            <h2 class="section__title" id="introTitle" data-reveal-title>はじめに</h2>
+            <p class="lead">
+              本ページは、Ocean Townにおける犯罪行為・法律運用に関するルールをまとめたものです。
+              認識の差によるトラブルを防ぐため、参加前・参加中を問わず必ず確認してください。
+            </p>
+            <p class="note">
+              ※本ページは読みやすさのために構造化しています。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================
+        画像テーブル → 文章ページ向け表に変換
+      ========================================================== -->
+      <section class="section section--rules" id="crime-table" aria-labelledby="crimeTableTitle">
+        <div class="container layout">
+          <aside class="sidenav" aria-label="章ナビゲーション">
+            <div class="sidenav__box">
+              <p class="sidenav__title">目次</p>
+              <ol class="sidenav__list">
+                <li><a class="sidenav__link" href="#crime-table">犯罪可能人数（表）</a></li>
+                <li><a class="sidenav__link" href="#text-rules">法律ルール（全文）</a></li>
+              </ol>
+
+              <div class="sidenav__source">
+                <p class="sidenav__sourceTitle">参照画像</p>
+                <a class="sidenav__sourceLink" href="https://www.genspark.ai/api/files/s/XTq7GCiu" target="_blank" rel="noopener">
+                  犯罪可能人数（画像）
+                </a>
+              </div>
+            </div>
+          </aside>
+
+          <article class="doc" aria-label="法律ルール：犯罪区分の表">
+            <header class="doc__head">
+              <h2 class="section__title" id="crimeTableTitle" data-reveal-title>犯罪可能人数</h2>
+              <p class="doc__meta">
+                ーー
+              </p>
+            </header>
+
+            <section class="rule-block" aria-labelledby="crimeTableBlockTitle">
+              <h3 class="rule-block__title" id="crimeTableBlockTitle" data-reveal-title>犯罪種類クールタイム / 必要PD人数 / 犯罪者最大人数 / ヘリコプター / 種類 / 犯罪可能 / 人質 / 犯罪者グレネード個数</h3>
+
+              <div class="table-wrap" role="region" aria-label="犯罪可能人数の表（横スクロール可能）" tabindex="0">
+                <table class="rules-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">犯罪種類クールタイム</th>
+                      <th scope="col">必要PD人数</th>
+                      <th scope="col">犯罪者最大人数</th>
+                      <th scope="col">ヘリコプター</th>
+                      <th scope="col">種類</th>
+                      <th scope="col">犯罪可能</th>
+                      <th scope="col">人質</th>
+                      <th scope="col">犯罪者グレネード個数</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">小型強盗15分</th>
+                      <td>2名</td>
+                      <td>1名</td>
+                      <td>なし</td>
+                      <td>店舗強盗</td>
+                      <td>全ての犯罪者</td>
+                      <td>可能</td>
+                      <td>禁止</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">準中型強盗30分</th>
+                      <td>4名</td>
+                      <td>2名</td>
+                      <td>なし</td>
+                      <td>フリーサ銀行強盗<br>宝石店強盗</td>
+                      <td>全ての犯罪者</td>
+                      <td>可能</td>
+                      <td>禁止</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">中型強盗1時間</th>
+                      <td>6名</td>
+                      <td>10名</td>
+                      <td>1台まで</td>
+                      <td>客船強盗<br>ボブキャットヘイスト</td>
+                      <td>全ての犯罪者</td>
+                      <td>禁止</td>
+                      <td>1個まで</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">準大型強盗1時間30分</th>
+                      <td>8名</td>
+                      <td>13名</td>
+                      <td>2台まで</td>
+                      <td>アーティファクト強盗</td>
+                      <td>全ての犯罪者</td>
+                      <td>禁止</td>
+                      <td>2個まで</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">大型強盗2時間</th>
+                      <td>10名</td>
+                      <td>15名</td>
+                      <td>3台まで</td>
+                      <td>ユニオン強盗<br>パシフィック強盗</td>
+                      <td>ギャングのみ</td>
+                      <td>禁止</td>
+                      <td>3個まで</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <p class="small-note">
+                ※上記は変更される可能性があります。
+              </p>
+            </section>
+          </article>
+        </div>
+      </section>
+
+      <!-- =========================================================
+        テキストルール（改変禁止：全文掲載）
+      ========================================================== -->
+      <section class="section section--rules" id="text-rules" aria-labelledby="textRulesTitle">
+        <div class="container">
+          <article class="doc" aria-label="法律ルール：本文（提供文の全文）">
+            <header class="doc__head">
+              <h2 class="section__title" id="textRulesTitle" data-reveal-title>法律ルール</h2>
+              <p class="doc__meta">
+                以下の内容は、提供された文章を表現・意味・順序を変えずにそのまま掲載しています（省略・要約・言い換えなし）。
+              </p>
+            </header>
+
+            <section class="rule-block" aria-labelledby="textBlockTitle">
+              <h3 class="rule-block__title" id="textBlockTitle" data-reveal-title>本文</h3>
+              <pre class="rule-text" aria-label="法律ルール本文（改変なし）">※小型強盗、準中型強盗では人質を取ることが可能
+
+　人質解放条件
+プレイヤーの場合 解放条件2つまで
+NPCの場合 解放条件1つまで
+
+サーバーの再起動15分前後いかなる犯罪行為が禁止
+発砲や車両の窃盗、薬物精製、薬物売買など
+
+準中型以下の犯罪は15分前までに開始
+中型は30分前までに開始
+準大型以上の犯罪は再起動1時間前までに開始
+(受注行為を含む)
+
+・瞑想15分前までに逃走シーンに入れなかった場合犯罪者側の負けとする。
+　参加者は瞑想後全員自首 
+
+・瞑想15分前までに逃走シーンには入ったけどシーンが終わらなかった場合はPD・犯罪者間で　話し合いの末落としどころを付ける。
+
+服や車の色などを統一しない状態で犯罪をする行為 (リバリーも統一)
+
+半グレは準大型強盗まで、ギャングの傭兵として大型強盗以上をする行為は禁止
+
+★シーン中での歪みについて
+
+
+歪んだ際は必ずPDに連絡をし、下記のどちらかの行動をとってください。
+歪みでの補填は必ずクリップを提出してください。
+クールタイム中と想定される時間に行われた犯罪に対しては一切補填を行いません。
+
+・歪んだ際に取れる行動
+1.回収シーンに入ってから耐久の後回収者が逃げきれればクリップを提出して補填
+2.PDに連絡しシーンを無かったことにする
+　※それまでに回収した換金物は必ず全てPDに渡す
+　※クリップは必ずPDへと連絡しているところから耐久と逃走のシーンを全て提出して下さい
+
+3分耐久 客船強盗、アーティファクトヘイスト、飛行場襲撃、ボブキャットヘイスト 、麻薬船強盗 
+10分耐久 ユニオンヘイスト、パシフィック銀行強盗
+
+客船強盗
+船尾以外の場所からの開始を禁止とする
+
+
+ボブキャットヘイスト
+•金庫中から射撃する行為及び金庫中へ射撃する行為を禁止
+•金庫中に籠城する行為を禁止
+•金庫を出入りする行為を禁止
+
+フリーカ銀行強盗 
+•金庫中から射撃する行為及び金庫中へ射撃する行為を禁止 
+•金庫中に籠城する行為を禁止
+•金庫を出入りする行為を禁止
+
+ユニオン強盗
+金庫の中と外からの発砲を禁止
+プレイヤーによって中が見えないことがある為
+※中で籠るような行為も禁止
+※中と外を行き来する行為も禁止
+
+
+◎禁止事項
+・シーンへの介入行為
+※制限人数以内かつゾンビ行為でないのであれば同チーム内での介入は可能
+
+・全ての犯罪において逃走シーンに入ったら回収に戻る行為は禁止
+
+・防弾ヘルメットの使用
+
+・シーン中に乗り物を修理する行為
+
+・シーン中に車両をガレージから出す行為
+
+・シーン中に車両をガレージに仕舞う行為
+
+・シーン中に乗り物に押収品をしまって利確をする行為
+※ガレージにしまわない場合でも禁止（必ず所持していてください）
+
+・犯罪シーン中に名前を非表示にする行為
+
+・シーン中に名前をキャラクターネーム以外の名前に変更する行為
+　街の中の名前にすること
+※指名手配中の変更は禁止
+
+・ROB行為
+　他人の物（車両、アイテム、金銭）を盗む行為
+※車両のトランクからのROB行為は一律禁止
+　ギャングルールに詳しく記載　ROB可能アイテム
+
+・ジョブ専用車両の犯罪利用
+　ゴミ収集ジョブやタクシージョブで使用できる車両の犯罪利用の禁止
+
+・ゾンビアタック行為
+
+・RPを超えた発言行為
+　脅迫や暴言、セクハラなど
+
+・RPを放棄する行為
+
+・航空機の使用
+
+・パラシュートの使用
+
+・ダウン時にラジオや電話を使用する行為
+　直接の会話行為は可能
+
+・シーン中にロードをする場所への逃走
+　リサセンやガレージの中に入る行為
+
+・小型強盗、準中型強盗でグレネードを使用する行為
+
+・犯罪の受注を終えているのに犯罪を行わない行為
+
+・犯罪の受注を取ってから30分以内に開始しない行為
+
+・シーン中に声の範囲でSuperShouting2を使用する行為
+　個人医に対して、発砲警告、アタック警告は使用可能
+
+・パシフィック強盗でのレーザーギミックをパルクールで避ける行為
+
+・ハウス強盗でのハウス内での発砲行為
+
+・同じ組織内で犯罪を同時に起こす行為（薬物、小型、準中型を除く）
+
+・シーン中に死んだふりや寝たふりをする行為（エモート）
+
+・他組織と連携または意図的に犯罪を同時に起こす行為
+
+・全ての犯罪で、逃走から6分以内にアジトに逃げ込む行為
+
+・小型・準中型強盗において、報酬をすべて回収せずに逃走する行為
+
+・野良沸きのEMS車両の窃盗行為
+
+・白の衣装または白っぽい衣装、車両のカラーを白で犯罪をする行為の禁止
+　全ての犯罪を対象として禁止とする
+
+・黒の衣装または黒っぽい衣装、車両のカラーを黒で犯罪をする行為の禁止
+　全ての犯罪を対象として禁止とする
+
+・PDが護送などの手段として使用している無人の車両に対しての発砲行為 
+※パンクさせたり爆発させたりする行為も含む
+
+・パトロンで所持している不動産の犯罪利用禁止
+　アジト逃げ使用やその近辺で停滞して戦闘する行為など
+
+・無人のヘリに対して発砲やヘリアタック
+※ヘリコプターの付近で戦う場合、ヘリコプターに被弾したりする場合がある
+
+・基本ルールやサーバーのルールを守らない行為
+
+・PDのロスト後5分以内に服を着替えたり新たに車両を出す行為
+
+・犯罪禁止車両を犯罪シーンが起こっている現場に存在させることの禁止 （逃走や戦闘のみでなくドアロックや進路妨害の為に詰める行為等も含む） 
+
+・進路妨害等の用途で詰める車両のカラーを統一をせずにシーンを開始すること （心なき車両は除く）
+　
+◎指名手配
+・指名手配中にギャングがアジトの中へ入る行為は可能
+
+・指名手配中の変装は可能
+
+・指名手配中は心無きの人質のみ取ることを可能とする
+
+・指名手配
+　ロスト後30分間
+　準中型強盗までの犯罪又は刑期がある犯罪のみ指名手配が可能
+
+◎C4爆弾の使用について
+・準大型以下使用不可
+　大型強盗1個まで使用可能
+　超大型強盗2個まで使用可能
+
+◎その他ルール
+・警察官は犯罪シーンの現場で邪魔な車両（通り道にある車両など）に対してのみアタック、発　砲、グレネードの使用可能
+
+
+（以下、提供された全文を一字一句そのまま記載）
+※文章の改変は禁止</pre>
+            </section>
+
+            <div class="doc__end">
+              <p class="endnote">
+                読み終えたら、必要に応じてメインサイトへ戻ってください。
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <!-- =========================================================
+      Footer（最小）
+    ========================================================== -->
+    <footer class="footer" id="footer" role="contentinfo">
+      <div class="container footer__inner">
+        <p class="footer__text">Ocean Town｜六法・法律ルール</p>
+        <div class="footer__actions">
+          <a class="footer__link" href="../index.html">公式ポータルへ戻る</a>
+          <a class="footer__link" href="#intro">ページ上部へ</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

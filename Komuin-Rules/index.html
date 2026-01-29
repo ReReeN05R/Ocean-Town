@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0e2a3b" />
+  <title>Ocean Town｜公務員ルール</title>
+
+  <!-- 日本語フォント（読みやすさ最優先・軽量運用） -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Shippori+Mincho:wght@600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <!-- 読書支援：スクロール進捗-->
+  <div class="scroll-progress" aria-hidden="true">
+    <div class="scroll-progress__bar" id="scrollProgressBar"></div>
+  </div>
+
+  <!-- ページ全体：初回のみ穏やかにフェードイン -->
+  <div class="page" data-page-fade id="pageRoot">
+    <!-- =========================================================
+      - タイトル
+      - 読書を邪魔しないテーマ切替
+    ========================================================== -->
+    <header class="header" role="banner">
+      <div class="container header__inner">
+        <div class="header__titleblock">
+          <p class="header__kicker">Ocean Town 公務員ルール</p>
+          <h1 class="header__title">Ocean Town｜公務員ルール</h1>
+          <p class="header__subtitle">街を支える役割としての責任と行動基準</p>
+        </div>
+
+        <div class="header__right">
+          <nav class="header__nav" aria-label="ページ内ナビゲーション">
+            <a class="header__link" href="#intro">はじめに</a>
+            <a class="header__link" href="#public-table">対応表（画像）</a>
+            <a class="header__link" href="#police-rules">警察（PD）</a>
+            <a class="header__link" href="#ems-rules">EMS</a>
+            <a class="header__link" href="#footer">戻る</a>
+          </nav>
+
+          <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="表示テーマを切り替える"
+            aria-pressed="false"
+            title="表示テーマを切り替える"
+          >
+            <span class="theme-toggle__icon" aria-hidden="true"></span>
+            <span class="theme-toggle__label">テーマ</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="main" role="main">
+      <!-- ===========
+        入り
+      ================ -->
+      <section class="section" id="intro" aria-labelledby="introTitle">
+        <div class="container">
+          <div class="card card--intro">
+            <h2 class="section__title" id="introTitle" data-reveal-title>はじめに</h2>
+            <p class="lead">
+              本ページは、Ocean Town における【公務員ルール】（警察PD／EMS）をまとめた公式文書です。
+              乱用・誤解・不公平なRPを防ぎ、街のバランスと信頼性を維持することを目的とします。
+            </p>
+            <p class="note">
+              ※当ページ本文は変更される可能性があります。変更の際はアナウンスいたします。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================
+        画像を読み込ませた表（公務員ルール表）
+      ========================================================== -->
+      <section class="section section--rules" id="public-table" aria-labelledby="publicTableTitle">
+        <div class="container layout">
+          <aside class="sidenav" aria-label="章ナビゲーション">
+            <div class="sidenav__box">
+              <p class="sidenav__title">目次</p>
+              <ol class="sidenav__list">
+                <li><a class="sidenav__link" href="#public-table">対応ルール表</a></li>
+                <li><a class="sidenav__link" href="#police-rules">警察ルール</a></li>
+                <li><a class="sidenav__link" href="#ems-rules">EMSルール</a></li>
+              </ol>
+
+              <div class="sidenav__source">
+                <p class="sidenav__sourceTitle">画像</p>
+                <a class="sidenav__sourceLink" href="a" target="_blank" rel="noopener">
+                  画像追加用予備リンク（現在未使用）
+                </a>
+              </div>
+            </div>
+          </aside>
+
+          <article class="doc" aria-label="公務員ルール：対応表（画像）">
+            <header class="doc__head">
+              <h2 class="section__title" id="publicTableTitle" data-reveal-title>対応ルール</h2>
+              <p class="doc__meta">
+                以下は変更される可能性があります。変更の際はアナウンスいたします。
+              </p>
+            </header>
+
+            <section class="rule-block" aria-labelledby="publicTableBlockTitle">
+              <h3 class="rule-block__title" id="publicTableBlockTitle" data-reveal-title>
+                犯罪 / 犯罪名 / 最大対応人数 / 車両上限 / ヘリコプター上限
+              </h3>
+
+              <div class="table-wrap" role="region" aria-label="対応表（横スクロール可能）" tabindex="0">
+                <table class="rules-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">犯罪</th>
+                      <th scope="col">犯罪名</th>
+                      <th scope="col">最大対応人数</th>
+                      <th scope="col">車両上限</th>
+                      <th scope="col">ヘリコプター上限</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">小型強盗</th>
+                      <td>店舗強盗</td>
+                      <td>3人</td>
+                      <td>3台<br>装甲車使用禁止</td>
+                      <td>1機<br>マーベリック使用禁止</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">準中型強盗</th>
+                      <td>フリーサ強盗<br>宝石店強盗</td>
+                      <td>4人</td>
+                      <td>4台<br>装甲車使用禁止</td>
+                      <td>1機</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">中型強盗</th>
+                      <td>客船強盗<br>ボブキャットヘイスト</td>
+                      <td>12人</td>
+                      <td>無制限<br>装甲車使用禁止</td>
+                      <td>2機</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">準大型強盗</th>
+                      <td>アーティファクト強盗</td>
+                      <td>15人</td>
+                      <td>無制限<br>装甲車1台まで</td>
+                      <td>3機</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">大型強盗</th>
+                      <td>ユニオン強盗<br>パシフィック強盗</td>
+                      <td>18人</td>
+                      <td>無制限<br>装甲車2台まで</td>
+                      <td>4機</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">超大型強盗</th>
+                      <td>未実装</td>
+                      <td>無制限</td>
+                      <td>無制限<br>装甲車3台まで</td>
+                      <td>無制限</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <p class="small-note">
+                <a href="a" target="_blank" rel="noopener">画像追加用予備リンク（現在未使用）</a>
+              </p>
+            </section>
+          </article>
+        </div>
+      </section>
+
+      <!-- =========================================================
+        警察（PD）ルール
+      ========================================================== -->
+      <section class="section section--rules" id="police-rules" aria-labelledby="policeRulesTitle">
+        <div class="container">
+          <article class="doc" aria-label="警察（PD）ルール：本文（提供文の全⽂）">
+            <header class="doc__head">
+              <h2 class="section__title" id="policeRulesTitle" data-reveal-title>警察（PD）ルール</h2>
+              <p class="doc__meta">
+                以下の内容は、提供された文章を表現・意味・順序を変えずにそのまま掲載しています（省略・要約・言い換えなし）。
+              </p>
+            </header>
+
+            <section class="rule-block" aria-labelledby="policeBlockTitle">
+              <h3 class="rule-block__title" id="policeBlockTitle" data-reveal-title>【警察ルール】</h3>
+              <pre class="rule-text" aria-label="警察ルール本文（改変なし）">人質解放条件
+プレイヤーの場合 解放条件2つまで
+NPCの場合 解放条件1つまで
+
+※度を越えた解放条件は、飲まなくても良い
+
+前提
+・出勤時は必ず１番無線に入ること
+
+・犯罪が多数発生した場合、無線を分けること
+　無線は1~9番を使用すること
+
+・逃走車両のない犯人の即逮捕を許可
+
+・小型強盗、準中型強盗で撃ち合いが発生した場合、PDの最大対応人数を二人追加可能とする
+
+・指名手配は完全にロストしてからすること
+　ロスト後30分間
+　準中型強盗までの犯罪又は刑期がある犯罪のみ指名手配が可能
+
+・職務質問をする場合
+　犯罪現場の近くまたは危険なものを所持していることが分かった場合のみ可能
+
+・モラルに反する行動・言動
+
+禁止事項
+・手荷物検査、手錠の悪用
+
+・ゾンビ行為 
+
+・退勤時のPD車両の使用
+
+・犯罪や汚職行為を禁止
+　汚職行為は解雇又はBanとなります
+
+・捨て身行為 
+　捨て身で車両にアタックする行為など
+
+・シーン中に乗り物を修理する行為
+
+・シーン中に車両をガレージから出す行為
+
+・シーン中に車両をガレージに仕舞う行為
+
+・準大型強盗、大型強盗、超大型強盗以外でのライオットの使用
+
+・キャンプ行為（薬物の取り締まりのみキャンプ行為は可能）
+　犯罪者が逃走を始めてから6分間は換金場所、アジト及びアジト周辺へ向かう行為を禁止
+※ギャングがアジトに向かっているのを追っていて、そのままアジトで戦う場合は可能
+
+・準中型強盗以下でのグレネードの使用
+
+・準中型強盗以下でのVDM行為
+　チェイス中に犯人が徒歩で逃走している際にVDMした場合、クビになることがあります
+
+・防弾ヘルメットを使用する行為
+
+・公務員の内部情報を外部に共有する行為
+　出勤人数や位置情報や起きてる犯罪名など
+
+・警告無しに先撃ちをする行為
+　必ず警告をしてから発砲する、発砲された場合即発砲が可能
+
+・確信が持てない状態での逮捕
+
+・ライオットでのVDM行為
+
+・シーン以外で犯罪者のアジトに行く行為
+
+・中型犯罪以上の犯罪行為での指名手配をかける行為
+
+・ダウン時に/911で報告する行為
+
+・無人のヘリに対して発砲やヘリアタック
+※ヘリコプターの付近での戦闘時、ヘリコプター等に被弾した場合は考慮
+
+・ユニオン金庫の中と外からの発砲を禁止
+　プレイヤーによって中が見えないことがある為
+※中で籠るような行為も禁止
+※中と外を行き来する行為も禁止
+
+
+<!--・カジノヘイストにおいてギミックで扉を開ける前にガラス扉を挟んで撃ち合うことの禁止
+　プレイヤーによって扉が見えないことがある為
+
+・ガラス扉奥にある小部屋中から外へ発砲することの禁止
+　外から中に向かって発砲することの禁止-->
+
+
+　
+◎個人医に対して威嚇発砲をする場合
+個人医がシーンに介入してきてあまりにも現場(PD)の近くに来た場合まずは声かけとともに車体に対して発砲を行うこと(中の人に当たる可能性はあります)。
+車体に発砲してから5~10秒経っても近くにいる場合、個人医に対しての発砲を許可します。
+犯罪現場への介入の為、意図せず流れ弾が個人医に当たる可能性もありますので撃たれる覚悟をもって介入してください。
+
+◎その他
+・客船強盗での船の使用台数は無制限
+
+・ライオットは準大型犯罪で1台、大型犯罪で2台
+　超大型強盗（未実装）は3台使用可能
+
+・ダウン体の服装については一貫して裸であるとの認識にしてください
+
+・警察官は犯罪シーンの現場で邪魔な車両（通り道にある車両など）に対してのみアタック、発砲、グレネードの使用可能
+
+◎薬物
+・薬物の精製所から出てくる犯人を目視した場合または精製所の中にいた場合、花を採っているところを目視した場合、薬物売買を目視した場合、警察は即時発砲を可能とする。
+　目視していない場合、必ず声かけをします。無視した場合、発砲する可能性があります。
+
+◎収束ツイートについて
+・PDはLSPD公式TwiXで収束の投稿（〇〇の犯罪は収束しましたなど）
+　収束ツイートは犯罪シーンに参加したすべての警察官が警察署にいることで可能とする
+　中型以上の犯罪は歪みで終了した場合であっても必ず収束ツイートを投稿すること
+※必ず収束ツイートをもってシーンは終了とする
+
+
+　収束ツイート後は警察はインパウンド対応をする為、妨害行為などはお辞めください
+　
+・シーンの収束ツイートが出た時点でPDに護送されていない犯罪者・個人医は本署テレポートを使用可能 
+
+　本署テレポート使用後は/helpまたはEMSに必ず起こしてもらうこと（必ず現場蘇生とする）犯罪者・個人医はEMSにダウン通知を送信し緊急テレポートの際、どの様な理由で本署テレポートを使用したのかをEMSに伝えること
+
+
+※改変禁止</pre>
+            </section>
+          </article>
+        </div>
+      </section>
+
+      <!-- =========================================================
+        EMSルール
+      ========================================================== -->
+      <section class="section section--rules" id="ems-rules" aria-labelledby="emsRulesTitle">
+        <div class="container">
+          <article class="doc" aria-label="EMSルール：本文（提供文の全⽂）">
+            <header class="doc__head">
+              <h2 class="section__title" id="emsRulesTitle" data-reveal-title>EMSルール</h2>
+              <p class="doc__meta">
+                以下の内容は、提供された文章を表現・意味・順序を変えずにそのまま掲載しています（省略・要約・言い換えなし）。
+              </p>
+            </header>
+
+            <section class="rule-block" aria-labelledby="emsBlockTitle">
+              <h3 class="rule-block__title" id="emsBlockTitle" data-reveal-title>【EMSルール】</h3>
+              <pre class="rule-text" aria-label="EMSルール本文（改変なし）">【院内における民間人の滞在について】
+基本的にEMS本院に治療待ちでない民間人がたむろする・滞在する行為は禁止です　※院前（駐車場付近）であれば多すぎない限り許可（目安10人）
+たむろしている人に対しての声掛けの基準は、忙しさやその時のEMSの人員で対応される方が決定します
+基準がないと判断はしづらいと思いますのでEMSで定めた基準をこちらに記載しておきます
+この基準を超えるほど院内にたむろしている市民がいたらお声掛けして退出していただきます
+深夜2時以降から20時ごろまでのEMSが暇な時間：30分程
+20時以降深夜2時まで ：5分程
+上記にかかわらず抗争及び大型犯罪の対応中 ：治療対応後即時
+
+【ギャング服を着た患者への対応に関して 】
+基本的に医療従事者として患者さんはギャング服であっても起こします
+ただこの街において現状ギャング服を着て死んでいる＝何か犯罪にかかわっていると推測します
+なのでギャング服の人を蘇生するときは一度PDに一報入れてから対応するようにいたします
+また、PDから事前にこの色の服の人は運び込まれても起こさないようになどの連絡があったときにはそれには応じますのでご理解ください
+
+【治療費一覧】
+けがの治療（院内）  ： 　 100,000円 
+けがの治療（院外）  ： 　 150,000円 
+院内蘇生　　　　　  ： 　 150,000円 
+現場蘇生　　　　　  ： 　 300,000円 
+現場蘇生（郊外）　  ：  　450,000円 
+水難・山岳地帯蘇生  ：  1,000,000円 
+ボブ(　  未実装  　)  ： 　 200,000円 
+/help 　　　　　　  ： 　 600,000円 
+
+
+＊歪み対応でも基本は料金を請求します
+EMSから請求されたお金はゆがみが確認されたら返金されます
+＊事件対応の警察を蘇生するときは場所に問わず院内蘇生の料金で、
+   留置所で犯人を蘇生するときは現場蘇生の料金で請求します
+
+
+【救急対応中に犯罪者から脅迫を受けたときの対応】
+EMSは基本的に救急対応中に指名手配者などを見つけた場合はPDに通報する義務があります
+犯罪者はそのことを把握しており、EMSに対して通報せずに蘇生しろと脅してくる場合があります
+その際には命を最優先し脅迫内容に従って下さい
+
+通報せずに蘇生 → できる限り穏便に現場を離れる → 安全な車内かつ距離を取った状態でPDに通報
+ 
+このように安全を確保してから職務を果たせば問題ありません
+
+
+
+※改変・省略禁止</pre>
+            </section>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <!-- =========================================================
+      フッター
+    ========================================================== -->
+    <footer class="footer" id="footer" role="contentinfo">
+      <div class="container footer__inner">
+        <p class="footer__text">Ocean Town｜公務員ルール</p>
+        <div class="footer__actions">
+          <a class="footer__link" href="../index.html">公式ポータルへ戻る</a>
+          <a class="footer__link" href="../rules/index.html">ルール一覧へ戻る</a>
+          <a class="footer__link" href="#intro">ページ上部へ</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
